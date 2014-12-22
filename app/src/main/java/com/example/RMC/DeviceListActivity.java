@@ -60,6 +60,8 @@ public class DeviceListActivity extends Activity {
     TextView pairedTV, newTV, ownDevice,noPairedDevices, noNewDevices;
     Menu settingsMenu;
 
+    ListView pairedListView, newDevicesListView;
+
     String wasScanSelected = "NO";
 
     @Override
@@ -92,12 +94,12 @@ public class DeviceListActivity extends Activity {
         mNewDevicesArrayAdapter = new ArrayAdapter<String>(this, R.layout.device_name);
 
         // Find and set up the ListView for paired devices
-        ListView pairedListView = (ListView) findViewById(R.id.paired_devices);
+        pairedListView = (ListView) findViewById(R.id.paired_devices);
         pairedListView.setAdapter(mPairedDevicesArrayAdapter);
         pairedListView.setOnItemClickListener(mDeviceClickListener);
 
         // Find and set up the ListView for newly discovered devices
-        ListView newDevicesListView = (ListView) findViewById(R.id.new_devices);
+        newDevicesListView = (ListView) findViewById(R.id.new_devices);
         newDevicesListView.setAdapter(mNewDevicesArrayAdapter);
         newDevicesListView.setOnItemClickListener(mDeviceClickListener);
 
@@ -246,6 +248,9 @@ public class DeviceListActivity extends Activity {
             noNewDevices.setText("");
             noNewDevices.setVisibility(View.GONE);
             wasScanSelected = "YES";
+            pairedListView.setVisibility(View.GONE);
+            pairedTV.setVisibility(View.GONE);
+            noPairedDevices.setVisibility(View.GONE);
         }
 
         if(id == android.R.id.home){

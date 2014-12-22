@@ -16,8 +16,6 @@
 
 package com.example.RMC;
 
-
-
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.Activity;
@@ -53,6 +51,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.os.Vibrator;
+
+import javax.crypto.Mac;
 
 /**
  * This is the main Activity that displays the current chat session.
@@ -94,13 +94,14 @@ public class BluetoothChat extends Activity {
     // Member object for the chat services
     private BluetoothChatService mChatService = null;
 
-    TextView tv,defaultTV;
-    LinearLayout programSelectionLL;
+    TextView tv, defaultTV, deviceDetails;
+    LinearLayout programSelectionLL,latestDeviceInfo;
     RelativeLayout ppt,mediaPlay;
     Spinner programSelectionSpinner;
     CustomProgramList spinnerAdapter;
     ImageView pptMinimize, pptMaximize, pptLeft, pptRight, mediaPlayMinimize, mediaPlayMaximize, mediaPlayMute, mediaPlayUnmute, mediaPlayPlay, mediaPlayStop, mediaPlayPause;
     SharedPreferences.Editor editor;
+    String pairedDeviceAddress;
 
     String[] web = {
             "Microsoft PowerPoint",
@@ -178,18 +179,6 @@ public class BluetoothChat extends Activity {
 
             }
         });
-
-        SharedPreferences prefs = getSharedPreferences("RMCSP", MODE_PRIVATE);
-        String deviceName = prefs.getString("deviceName", null);
-        String deviceAddress = prefs.getString("deviceAddress", null);
-
-        if(deviceName==null && deviceAddress ==null){
-            Toast.makeText(getApplicationContext(),"ABC", Toast.LENGTH_SHORT).show();
-        }
-        else{
-            Toast.makeText(getApplicationContext(),deviceName, Toast.LENGTH_SHORT).show();
-            Toast.makeText(getApplicationContext(),deviceAddress, Toast.LENGTH_SHORT).show();
-        }
 
         pptMinimize = (ImageView) findViewById(R.id.pptMinimize);
         pptMaximize = (ImageView) findViewById(R.id.pptMaximize);
@@ -292,6 +281,37 @@ public class BluetoothChat extends Activity {
             }
         });
 
+
+
+        // Get local Bluetooth adapter
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        // If the adapter is null, then Bluetooth is not supported
+        if (mBluetoothAdapter == null) {
+            Toast.makeText(this, "Bluetooth is not available", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+
+        SharedPreferences prefs = getSharedPreferences("RMCSP", MODE_PRIVATE);
+        String deviceName = prefs.getString("deviceName", null);
+        String deviceAddress = prefs.getString("deviceAddress", null);
+
+        if(deviceName==null && deviceAddress ==null){
+            //Toast.makeText(getApplicationContext(),"ABC", Toast.LENGTH_SHORT).show();
+        }
+        else if(deviceName!=null && deviceAddress !=null){
+            //deviceDetails = (TextView) findViewById(R.id.deviceDetails);
+            //deviceDetails.setText("Device Name: " + deviceName + "\nMAC Address: " + deviceAddress);
+            //latestDeviceInfo = (LinearLayout)findViewById(R.id.latestDeviceInfo);
+            BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(deviceAddress);
+            if (mChatService == null) setupChat();
+            mChatService.connect(device, true);
+
+            Toast.makeText(getApplicationContext(),deviceName, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(),deviceAddress, Toast.LENGTH_SHORT).show();
+        }
+
     	/*button1 = (ImageButton) findViewById(R.id.imageButton1);
 		button2 = (ImageButton) findViewById(R.id.imageButton2);
 		button3 = (ImageButton) findViewById(R.id.imageButton3);
@@ -388,15 +408,6 @@ public class BluetoothChat extends Activity {
 
 
 
-        // Get local Bluetooth adapter
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-
-        // If the adapter is null, then Bluetooth is not supported
-        if (mBluetoothAdapter == null) {
-            Toast.makeText(this, "Bluetooth is not available", Toast.LENGTH_LONG).show();
-            finish();
-            return;
-        }
     }
 
     private AdapterView.OnItemClickListener programClickListener = new AdapterView.OnItemClickListener() {
@@ -545,6 +556,12 @@ public class BluetoothChat extends Activity {
                             v.vibrate(400);
                             //Toast.makeText(getApplicationContext(),"Pairing successful", Toast.LENGTH_SHORT).show();
                             //mConversationArrayAdapter.clear();
+                            if(mConnectedDeviceName!=null && pairedDeviceAddress != null) {
+                                editor.putString("deviceName", mConnectedDeviceName);
+                                editor.putString("deviceAddress", pairedDeviceAddress);
+                                Log.i(TAG, mConnectedDeviceName + " " + pairedDeviceAddress);
+                                editor.commit();
+                            }
 
                             programSelectionLL.setVisibility(View.VISIBLE);
                             defaultTV.setVisibility(View.GONE);
@@ -595,8 +612,6 @@ public class BluetoothChat extends Activity {
                     Toast.makeText(getApplicationContext(), "Connected to "
                             + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
 
-
-
                     break;
                 case MESSAGE_TOAST:
                     Toast.makeText(getApplicationContext(), msg.getData().getString(TOAST),
@@ -641,14 +656,11 @@ public class BluetoothChat extends Activity {
         // Get the device MAC address
         String address = data.getExtras()
                 .getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
+        pairedDeviceAddress = address;
         // Get the BluetoothDevice object
         BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
         // Attempt to connect to the device
         mChatService.connect(device, secure);
-
-        editor.putString("deviceName", mConnectedDeviceName);
-        editor.putString("deviceAddress", address);
-        editor.commit();
     }
 
     @Override
@@ -701,7 +713,7 @@ public class BluetoothChat extends Activity {
                     public void onClick(DialogInterface dialog, int which) {
                         //finish();0
                         mChatService.stop();
-                        mBluetoothAdapter.disable();
+                        //mBluetoothAdapter.disable();
                         System.exit(0);
                     }
 
