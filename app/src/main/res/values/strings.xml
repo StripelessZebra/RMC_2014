@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
-    <string name="app_name">Ice Showdown</string>
+    <string name="app_name">RMC</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Virtual Pool 2014</string>
     <string name="title_activity_test">TestActivity</string>
@@ -21,16 +21,16 @@
 
     <!-- BluetoothChat -->
     <string name="not_connected">You are not connected to a device</string>
-    <string name="bt_not_enabled_leaving">Bluetooth was not enabled. Leaving Bluetooth Chat.</string>
-    <string name="title_connecting">connecting...</string>
-    <string name="title_connected_to">connected to <xliff:g id="device_name">%1$s</xliff:g></string>
-    <string name="title_not_connected">not connected</string>
+    <string name="bt_not_enabled_leaving">Bluetooth was not enabled.</string>
+    <string name="title_connecting">Connecting...</string>
+    <string name="title_connected_to">Connected to <xliff:g id="device_name">%1$s</xliff:g></string>
+    <string name="title_not_connected">Not connected</string>
 
     <!-- DeviceListActivity -->
-    <string name="scanning">scanning for devices</string>
-    <string name="select_device">select a device to connect</string>
-    <string name="none_paired">No devices have been paired</string>
-    <string name="none_found">No devices found</string>
+    <string name="scanning">Scanning for devices</string>
+    <string name="select_device">Connect a device</string>
+    <string name="none_paired">No paired devices detected</string>
+    <string name="none_found">No available devices detected</string>
 
     <!-- Options Menu -->
     <string name="secure_connect">Connect a device - Secure</string>

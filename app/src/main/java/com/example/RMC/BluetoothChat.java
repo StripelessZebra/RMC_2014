@@ -183,7 +183,7 @@ public class BluetoothChat extends Activity {
         String deviceName = prefs.getString("deviceName", null);
         String deviceAddress = prefs.getString("deviceAddress", null);
         Toast.makeText(getApplicationContext(),deviceName, Toast.LENGTH_SHORT).show();
-
+        Toast.makeText(getApplicationContext(),deviceAddress, Toast.LENGTH_SHORT).show();
 
         pptMinimize = (ImageView) findViewById(R.id.pptMinimize);
         pptMaximize = (ImageView) findViewById(R.id.pptMaximize);
