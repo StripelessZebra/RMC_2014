@@ -26,24 +26,9 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.example.RMC.main_activity"
-            android:label="@string/app_name" >
-        </activity>
-        <activity
-            android:name="com.example.RMC.TestActivity"
-            android:label="@string/title_activity_test" >
-        </activity>
-        <activity
-            android:name="com.example.RMC.HowToPlay"
-            android:label="@string/title_activity_how_to_play" >
-        </activity>
-        <activity
-            android:name="com.example.RMC.TermsAndConditions"
-            android:label="@string/title_activity_terms_and_conditions" >
-        </activity>
-        <activity
             android:name="com.example.RMC.RMCHomePage"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -51,24 +36,24 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.example.RMC.BluetoothSettings"
-            android:label="@string/title_activity_bluetooth_settings" >
-        </activity>
-        <activity
             android:name="com.example.RMC.BluetoothChat"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name="com.example.RMC.BluetoothChatService"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name="com.example.RMC.DeviceListActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name="com.example.RMC.CustomProgramList"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:screenOrientation="portrait">
         </activity>
     </application>
 

@@ -182,8 +182,14 @@ public class BluetoothChat extends Activity {
         SharedPreferences prefs = getSharedPreferences("RMCSP", MODE_PRIVATE);
         String deviceName = prefs.getString("deviceName", null);
         String deviceAddress = prefs.getString("deviceAddress", null);
-        Toast.makeText(getApplicationContext(),deviceName, Toast.LENGTH_SHORT).show();
-        Toast.makeText(getApplicationContext(),deviceAddress, Toast.LENGTH_SHORT).show();
+
+        if(deviceName==null && deviceAddress ==null){
+            Toast.makeText(getApplicationContext(),"ABC", Toast.LENGTH_SHORT).show();
+        }
+        else{
+            Toast.makeText(getApplicationContext(),deviceName, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(),deviceAddress, Toast.LENGTH_SHORT).show();
+        }
 
         pptMinimize = (ImageView) findViewById(R.id.pptMinimize);
         pptMaximize = (ImageView) findViewById(R.id.pptMaximize);
@@ -588,7 +594,6 @@ public class BluetoothChat extends Activity {
                     mConnectedDeviceName = msg.getData().getString(DEVICE_NAME);
                     Toast.makeText(getApplicationContext(), "Connected to "
                             + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
-                    editor.putString("deviceName", mConnectedDeviceName);
 
 
 
@@ -608,6 +613,8 @@ public class BluetoothChat extends Activity {
                 // When DeviceListActivity returns with a device to connect
                 if (resultCode == Activity.RESULT_OK) {
                     connectDevice(data, true);
+
+
                 }
                 break;
             case REQUEST_CONNECT_DEVICE_INSECURE:
@@ -639,6 +646,7 @@ public class BluetoothChat extends Activity {
         // Attempt to connect to the device
         mChatService.connect(device, secure);
 
+        editor.putString("deviceName", mConnectedDeviceName);
         editor.putString("deviceAddress", address);
         editor.commit();
     }
@@ -692,6 +700,7 @@ public class BluetoothChat extends Activity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         //finish();0
+                        mChatService.stop();
                         mBluetoothAdapter.disable();
                         System.exit(0);
                     }
