@@ -1,0 +1,34 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#B5DDF5"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".TermsAndConditions" >
+
+   <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Terms and Conditions"
+        android:textStyle="bold" 
+        android:textColor="#0E4A6E"
+        android:textSize="40dp" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="279dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.86"
+        android:textColor="#054C76"
+        android:textSize="20dp"
+        android:text="This application is strongly advised for age 12 and above only. 
+The Company will not be liable for any self injuries, damages to users phone devices, which include other IT devices(e.g Computer, Laptop)
+For further enquires, users can visit the company’s page or email for more information.
+
+" />
+</LinearLayout>

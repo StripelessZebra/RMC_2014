@@ -1,0 +1,49 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="#B5DDF5"
+    android:orientation="vertical"
+    tools:context=".HowToPlay" >
+
+   <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="How To Play"
+        android:textStyle="bold" 
+        android:textColor="#0E4A6E"
+        android:textSize="40dp"/>
+		
+    <TextView
+        android:id="@+id/textView2"
+        android:textColor="#0E4A6E"
+        android:layout_width="254dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.90"
+        android:textSize="17dp"
+        android:textStyle="italic"
+        android:text="Users need to click on Play button 
+in order to play the game. 
+Before playing, the phone would scan for
+Nearby PCs via Bluetooth scanning. 
+After finding a nearby PC and connecting to it, User can start 
+Playing Ice Showdown, Users need to score at least 3 out of the 5 balls
+placed in the ice field in order to win the round. This game can be played until 
+the user decides to stop the game, whoever has the higher win rounds, would win 
+the game.
+In any case, if the phone is disconnected
+From the PC, there is a button for users 
+To click on to reconnect to the PC. 
+
+Have Fun Pooling!
+        " />
+
+    
+</LinearLayout>
+
+

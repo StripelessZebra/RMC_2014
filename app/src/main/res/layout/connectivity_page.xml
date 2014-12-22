@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2009 The Android Open Source Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff"
+
+    >
+
+    <TextView
+        android:id="@+id/defaultTextTV"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:textSize="20dp"
+        android:gravity="center"
+        android:text="You are not connected to a device &#10548; "/>
+
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_below="@+id/defaultTextTV"
+        android:layout_marginTop="30dp"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:background="@drawable/app_icon"
+        android:layout_gravity="center"
+        android:layout_centerHorizontal="true" />
+
+    <LinearLayout
+        android:id="@+id/bluetoothStatus"
+        android:layout_below="@+id/icon"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"
+
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#000"
+            android:textSize="20dp"
+            android:text="Connection Status: "/>
+
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:textSize="20dp"
+            android:paddingLeft="5dp"
+            android:layout_marginLeft="5dp"
+            android:background="@drawable/disconnected"
+            />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/programSelectionLL"
+        android:layout_below="@+id/bluetoothStatus"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+
+        android:layout_marginTop="10dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Program Selection"
+            android:textSize="15dp"
+            android:layout_marginTop="5dp"
+            android:textColor="#000"
+            android:paddingLeft="5dp"
+            android:shadowColor="#22ffffff"
+            android:shadowRadius="5"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:background="#15000000"
+            />
+
+        <!--<ListView
+            android:id="@+id/programLV"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:divider="#15000000"
+            android:dividerHeight="0.5sp" />-->
+        <Spinner
+            android:id="@+id/programSelectionSpinner"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/ppt"
+        android:layout_below="@+id/programSelectionLL"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center_vertical|center_horizontal"
+        android:visibility="gone"
+        >
+
+        <ImageView
+            android:id="@+id/pptMinimize"
+            android:src="@drawable/ic_action_return_from_full_screen"
+            android:background="#23000000"
+            android:layout_width="60dp"
+            android:layout_height="60dp"/>
+
+        <ImageView
+            android:id="@+id/pptMaximize"
+            android:layout_marginLeft="100dp"
+            android:layout_toRightOf="@+id/pptMinimize"
+            android:background="#23000000"
+            android:src="@drawable/ic_action_full_screen"
+            android:layout_width="60dp"
+            android:layout_height="60dp"/>
+
+
+        <ImageView
+            android:id="@+id/pptLeft"
+            android:layout_below="@+id/pptMinimize"
+            android:background="#23000000"
+            android:src="@drawable/ic_action_back"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginBottom="50dp"/>
+
+        <ImageView
+            android:id="@+id/pptRight"
+            android:layout_marginLeft="100dp"
+            android:layout_toRightOf="@+id/pptLeft"
+            android:background="#23000000"
+            android:layout_below="@+id/pptMaximize"
+            android:src="@drawable/ic_action_forward"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginBottom="50dp"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/mediaPlay"
+        android:layout_below="@+id/programSelectionLL"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center_vertical|center_horizontal"
+        >
+
+        <ImageView
+            android:id="@+id/mediaPlayMinimize"
+            android:layout_marginLeft="60dp"
+            android:src="@drawable/ic_action_return_from_full_screen"
+            android:background="#23000000"
+            android:layout_width="60dp"
+            android:layout_height="60dp"/>
+
+        <ImageView
+            android:id="@+id/mediaPlayMaximize"
+            android:layout_marginLeft="60dp"
+            android:layout_toRightOf="@+id/mediaPlayMinimize"
+            android:background="#23000000"
+            android:src="@drawable/ic_action_full_screen"
+            android:layout_width="60dp"
+            android:layout_height="60dp"/>
+
+
+
+        <ImageView
+            android:id="@+id/mediaPlayMute"
+            android:layout_below="@+id/mediaPlayMinimize"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="60dp"
+            android:background="#23000000"
+            android:src="@drawable/ic_action_volume_muted"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            />
+
+        <ImageView
+            android:id="@+id/mediaPlayUnmute"
+            android:layout_below="@+id/mediaPlayMaximize"
+            android:layout_toRightOf="@+id/mediaPlayMute"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="60dp"
+            android:background="#23000000"
+            android:src="@drawable/ic_action_volume_on"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            />
+
+
+
+        <ImageView
+            android:id="@+id/mediaPlayPlay"
+            android:layout_below="@+id/mediaPlayMute"
+            android:layout_marginTop="20dp"
+            android:background="#23000000"
+            android:src="@drawable/ic_action_play"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+
+            android:layout_marginBottom="5dp"/>
+
+        <ImageView
+            android:id="@+id/mediaPlayStop"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="60dp"
+            android:layout_toRightOf="@+id/mediaPlayPlay"
+            android:background="#23000000"
+            android:layout_below="@+id/mediaPlayMute"
+            android:src="@drawable/ic_action_stop"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+
+            android:layout_marginBottom="5dp"/>
+
+        <ImageView
+            android:id="@+id/mediaPlayPause"
+            android:layout_marginTop="20dp"
+            android:layout_below="@+id/mediaPlayMute"
+            android:layout_toRightOf="@+id/mediaPlayStop"
+            android:background="#23000000"
+            android:src="@drawable/ic_action_pause"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginLeft="60dp"
+            android:layout_marginBottom="5dp"/>
+
+
+
+    </RelativeLayout>
+
+
+
+    <!--    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+        </LinearLayout>
+
+         <ImageView
+             android:id="@+id/imageView3"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:layout_alignBottom="@+id/textView2"
+             android:layout_marginLeft="20dp"
+             android:layout_toRightOf="@+id/textView2"
+             android:src="@drawable/indicator" />
+
+         <ImageButton
+             android:id="@+id/imageButton1"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:padding="20dp"
+             android:layout_alignTop="@+id/imageButton4"
+             android:layout_toLeftOf="@+id/imageButton4"
+             android:src="@drawable/leftbutton" />
+
+         <ImageButton
+             android:id="@+id/imageButton3"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:padding="20dp"
+             android:layout_above="@+id/imageButton1"
+             android:layout_toRightOf="@+id/imageButton1"
+             android:src="@drawable/topbutton" />
+
+         <ImageButton
+             android:id="@+id/imageButton2"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:padding="20dp"
+             android:layout_alignParentBottom="true"
+             android:layout_marginBottom="54dp"
+             android:layout_toRightOf="@+id/imageButton4"
+             android:src="@drawable/rightbutton" />
+
+         <ImageButton
+             android:id="@+id/imageButton4"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:padding="20dp"
+             android:layout_alignTop="@+id/imageButton2"
+             android:layout_centerHorizontal="true"
+             android:src="@drawable/bottombutton" />
+
+
+            >-->
+
+
+    <!--<Button
+        android:id="@+id/button_send"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:text="@string/send"
+        android:visibility="invisible" />
+
+    <ListView
+        android:id="@+id/in"
+        android:layout_width="match_parent"
+        android:layout_height="206dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:stackFromBottom="true"
+        android:transcriptMode="alwaysScroll"
+        android:visibility="invisible"
+        android:layout_centerInParent="true">
+    </ListView>
+
+    <EditText
+        android:id="@+id/edit_text_out"
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/button_send"
+        android:layout_alignBottom="@+id/button_send"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@+id/button_send"
+        android:layout_weight="1"
+        android:ems="10"
+        android:visibility="invisible">
+
+        <requestFocus />
+    </EditText>-->
+
+    <!--<TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/imageButton1"
+        android:layout_centerVertical="true"
+        android:text="Connection:"
+        android:textColor="#FFFFFF"
+        android:textSize="20dp" />-->
+
+</RelativeLayout>
