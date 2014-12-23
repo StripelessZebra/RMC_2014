@@ -22,9 +22,11 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
@@ -188,15 +190,17 @@ public class BluetoothChat extends Activity {
         pptMinimize.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                String message ="PowerPoint Minimize";
+                String message ="ppt min";
                 sendMessage(message);
+                //BluetoothAdapter.getDefaultAdapter().disable();
+                //BluetoothAdapter.getDefaultAdapter().enable();
             }
         });
 
         pptMaximize.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                String message ="PowerPoint Maximize";
+                String message ="ppt max";
                 sendMessage(message);
             }
         });
@@ -204,7 +208,7 @@ public class BluetoothChat extends Activity {
         pptLeft.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                String message ="PowerPoint Previous Slide";
+                String message ="ppt pre";
                 sendMessage(message);
             }
         });
@@ -212,7 +216,7 @@ public class BluetoothChat extends Activity {
         pptRight.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                String message ="PowerPoint Next Slide";
+                String message ="ppt nex";
                 sendMessage(message);
             }
         });
@@ -405,9 +409,6 @@ public class BluetoothChat extends Activity {
 					}
 				});
 				*/
-
-
-
     }
 
     private AdapterView.OnItemClickListener programClickListener = new AdapterView.OnItemClickListener() {
@@ -698,7 +699,6 @@ public class BluetoothChat extends Activity {
         }
         return false;
     }
-
 
     @Override
     public void onBackPressed() {

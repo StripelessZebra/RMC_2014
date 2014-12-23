@@ -52,8 +52,26 @@ public class RMCHomePage extends Activity {
         }
 
         if (!BA.isEnabled()) {
-            Intent turnOn = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(turnOn, 0);
+            //Turn on bluetooth with user's permission
+            /*Intent turnOn = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(turnOn, 0);*/
+            BluetoothAdapter.getDefaultAdapter().enable();
+
+            new CountDownTimer(2000, 1000) {
+
+                public void onTick(long millisUntilFinished) {
+                    //mTextField.setText("seconds remaining: " + millisUntilFinished / 1000);
+                }
+
+                public void onFinish() {
+                    //mTextField.setText("done!");
+                    Intent intent = new Intent(
+                            RMCHomePage.this,
+                            BluetoothChat.class);
+                    startActivity(intent);
+                    RMCHomePage.this.finish();
+                }
+            }.start();
         }
         if (BA.isEnabled()) {
             //discoverBtn.setVisibility(View.VISIBLE);
