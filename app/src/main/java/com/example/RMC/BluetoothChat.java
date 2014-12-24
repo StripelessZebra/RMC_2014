@@ -103,7 +103,9 @@ public class BluetoothChat extends Activity {
     CustomProgramList spinnerAdapter;
     ImageView pptMinimize, pptMaximize, pptLeft, pptRight, mediaPlayMinimize, mediaPlayMaximize, mediaPlayMute, mediaPlayUnmute, mediaPlayPlay, mediaPlayStop, mediaPlayPause;
     SharedPreferences.Editor editor;
-    String pairedDeviceAddress;
+    String pairedDeviceAddress,hasOnCreateOptionsMenuBeenCreated;
+    Menu settingsMenu;
+    MenuItem connectBT, disconnectBT;
 
     String[] web = {
             "Microsoft PowerPoint",
@@ -119,7 +121,42 @@ public class BluetoothChat extends Activity {
         super.onCreate(savedInstanceState);
         if(D) Log.e(TAG, "+++ ON CREATE +++");
 
+        // Register for broadcasts on BluetoothAdapter state change
+        IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
+        registerReceiver(mReceiver, filter);
         editor = getSharedPreferences("RMCSP", MODE_PRIVATE).edit();
+        // Get local Bluetooth adapter
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        // If the adapter is null, then Bluetooth is not supported
+        if (mBluetoothAdapter == null) {
+            Toast.makeText(this, "Bluetooth is not available", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+        if(mBluetoothAdapter.isEnabled()) {
+            SharedPreferences prefs = getSharedPreferences("RMCSP", MODE_PRIVATE);
+            String deviceName = prefs.getString("deviceName", null);
+            String deviceAddress = prefs.getString("deviceAddress", null);
+
+            if (deviceName == null && deviceAddress == null) {
+                if(hasOnCreateOptionsMenuBeenCreated =="YES") {
+                    connectBT.setVisible(true);
+                    disconnectBT.setVisible(false);
+                }
+                //Toast.makeText(getApplicationContext(),"ABC", Toast.LENGTH_SHORT).show();
+            } else if (deviceName != null && deviceAddress != null) {
+                //deviceDetails = (TextView) findViewById(R.id.deviceDetails);
+                //deviceDetails.setText("Device Name: " + deviceName + "\nMAC Address: " + deviceAddress);
+                //latestDeviceInfo = (LinearLayout)findViewById(R.id.latestDeviceInfo);
+                BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(deviceAddress);
+                if (mChatService == null) setupChat();
+                mChatService.connect(device, true);
+
+                //Toast.makeText(getApplicationContext(),deviceName, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(),deviceAddress, Toast.LENGTH_SHORT).show();
+            }
+        }
 
         // Set up the window layout
         setContentView(R.layout.connectivity_page);
@@ -192,8 +229,6 @@ public class BluetoothChat extends Activity {
             public void onClick(View view) {
                 String message ="ppt min";
                 sendMessage(message);
-                //BluetoothAdapter.getDefaultAdapter().disable();
-                //BluetoothAdapter.getDefaultAdapter().enable();
             }
         });
 
@@ -287,34 +322,7 @@ public class BluetoothChat extends Activity {
 
 
 
-        // Get local Bluetooth adapter
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-        // If the adapter is null, then Bluetooth is not supported
-        if (mBluetoothAdapter == null) {
-            Toast.makeText(this, "Bluetooth is not available", Toast.LENGTH_LONG).show();
-            finish();
-            return;
-        }
-
-        SharedPreferences prefs = getSharedPreferences("RMCSP", MODE_PRIVATE);
-        String deviceName = prefs.getString("deviceName", null);
-        String deviceAddress = prefs.getString("deviceAddress", null);
-
-        if(deviceName==null && deviceAddress ==null){
-            //Toast.makeText(getApplicationContext(),"ABC", Toast.LENGTH_SHORT).show();
-        }
-        else if(deviceName!=null && deviceAddress !=null){
-            //deviceDetails = (TextView) findViewById(R.id.deviceDetails);
-            //deviceDetails.setText("Device Name: " + deviceName + "\nMAC Address: " + deviceAddress);
-            //latestDeviceInfo = (LinearLayout)findViewById(R.id.latestDeviceInfo);
-            BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(deviceAddress);
-            if (mChatService == null) setupChat();
-            mChatService.connect(device, true);
-
-            Toast.makeText(getApplicationContext(),deviceName, Toast.LENGTH_SHORT).show();
-            Toast.makeText(getApplicationContext(),deviceAddress, Toast.LENGTH_SHORT).show();
-        }
 
     	/*button1 = (ImageButton) findViewById(R.id.imageButton1);
 		button2 = (ImageButton) findViewById(R.id.imageButton2);
@@ -539,89 +547,6 @@ public class BluetoothChat extends Activity {
         tv.setText(subTitle);
     }
 
-    // The Handler that gets information back from the BluetoothChatService
-    private final Handler mHandler = new Handler() {
-        @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case MESSAGE_STATE_CHANGE:
-                    if(D) Log.i(TAG, "MESSAGE_STATE_CHANGE: " + msg.arg1);
-                    switch (msg.arg1) {
-                        case BluetoothChatService.STATE_CONNECTED:
-                            //setStatus(getString(R.string.title_connected_to, mConnectedDeviceName));
-                            tv.setText("");
-                            tv.setBackground(getResources().getDrawable(R.drawable.connected));
-                            Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                            // Vibrate for 400 milliseconds
-                            v.vibrate(400);
-                            //Toast.makeText(getApplicationContext(),"Pairing successful", Toast.LENGTH_SHORT).show();
-                            //mConversationArrayAdapter.clear();
-                            if(mConnectedDeviceName!=null && pairedDeviceAddress != null) {
-                                editor.putString("deviceName", mConnectedDeviceName);
-                                editor.putString("deviceAddress", pairedDeviceAddress);
-                                Log.i(TAG, mConnectedDeviceName + " " + pairedDeviceAddress);
-                                editor.commit();
-                            }
-
-                            programSelectionLL.setVisibility(View.VISIBLE);
-                            defaultTV.setVisibility(View.GONE);
-
-                            if (programSelectionSpinner.getSelectedItem().toString().equals("Microsoft PowerPoint")){
-                                ppt.setVisibility(View.VISIBLE);
-                                mediaPlay.setVisibility(View.GONE);
-                            }
-                            else if(programSelectionSpinner.getSelectedItem().toString().equals("Windows Media Player")) {
-                                ppt.setVisibility(View.GONE);
-                                mediaPlay.setVisibility(View.VISIBLE);
-                            }
-                            break;
-                        case BluetoothChatService.STATE_CONNECTING:
-                            tv.setText("");
-                            tv.setBackground(getResources().getDrawable(R.drawable.connecting));
-                            break;
-                        case BluetoothChatService.STATE_LISTEN:
-                        case BluetoothChatService.STATE_NONE:
-                            //setStatus(R.string.title_not_connected);
-                            tv.setText("");
-                            tv.setBackground(getResources().getDrawable(R.drawable.disconnected));
-
-                            defaultTV.setVisibility(View.VISIBLE);
-                            programSelectionLL.setVisibility(View.GONE);
-                            ppt.setVisibility(View.GONE);
-                            mediaPlay.setVisibility(View.GONE);
-                            break;
-                    }
-                    break;
-                case MESSAGE_WRITE:
-                    byte[] writeBuf = (byte[]) msg.obj;
-                    // construct a string from the buffer
-                    String writeMessage = new String(writeBuf);
-                    //mConversationArrayAdapter.add("Me:  " + writeMessage);
-                    Toast.makeText(getApplicationContext(),writeMessage, Toast.LENGTH_SHORT).show();
-                    break;
-                case MESSAGE_READ:
-                    byte[] readBuf = (byte[]) msg.obj;
-                    // construct a string from the valid bytes in the buffer
-                    String readMessage = new String(readBuf, 0, msg.arg1);
-                    //mConversationArrayAdapter.add(mConnectedDeviceName+":  " + readMessage);
-                    Toast.makeText(getApplicationContext(),readMessage,Toast.LENGTH_SHORT).show();
-                    break;
-                case MESSAGE_DEVICE_NAME:
-                    // save the connected device's name
-                    mConnectedDeviceName = msg.getData().getString(DEVICE_NAME);
-                    Toast.makeText(getApplicationContext(), "Connected to "
-                            + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
-
-                    break;
-                case MESSAGE_TOAST:
-                    Toast.makeText(getApplicationContext(), msg.getData().getString(TOAST),
-                            Toast.LENGTH_SHORT).show();
-                    break;
-            }
-        }
-    };
-
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(D) Log.d(TAG, "onActivityResult " + resultCode);
         switch (requestCode) {
@@ -667,7 +592,13 @@ public class BluetoothChat extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
+        this.settingsMenu = menu;
         inflater.inflate(R.menu.connectivity_page, menu);
+        connectBT = settingsMenu.findItem(R.id.secure_connect_scan);
+        connectBT.setVisible(true);
+        disconnectBT = settingsMenu.findItem(R.id.disconnectDevice);
+        disconnectBT.setVisible(false);
+        hasOnCreateOptionsMenuBeenCreated = "YES";
         return true;
     }
 
@@ -685,9 +616,16 @@ public class BluetoothChat extends Activity {
                 } else {
                     // device is not discoverable & connectable
                     // Ensure this device is discoverable by others
-                    ensureDiscoverable();
+                    //ensureDiscoverable();
                 }
                 return true;
+            case R.id.disconnectDevice:
+                mChatService.stop();
+                connectBT.setVisible(true);
+                disconnectBT.setVisible(false);
+                //BluetoothAdapter.getDefaultAdapter().disable();
+                //BluetoothAdapter.getDefaultAdapter().enable();
+
         /*case R.id.insecure_connect_scan:
             // Launch the DeviceListActivity to see devices and do scan
             serverIntent = new Intent(this, DeviceListActivity.class);
@@ -699,6 +637,123 @@ public class BluetoothChat extends Activity {
         }
         return false;
     }
+
+    // The Handler that gets information back from the BluetoothChatService
+    private final Handler mHandler = new Handler() {
+        @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case MESSAGE_STATE_CHANGE:
+                    if(D) Log.i(TAG, "MESSAGE_STATE_CHANGE: " + msg.arg1);
+                    switch (msg.arg1) {
+                        case BluetoothChatService.STATE_CONNECTED:
+                            //setStatus(getString(R.string.title_connected_to, mConnectedDeviceName));
+                            tv.setText("");
+                            tv.setBackground(getResources().getDrawable(R.drawable.connected));
+                            Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                            // Vibrate for 400 milliseconds
+                            v.vibrate(400);
+                            //Toast.makeText(getApplicationContext(),"Pairing successful", Toast.LENGTH_SHORT).show();
+                            //mConversationArrayAdapter.clear();
+                            if(mConnectedDeviceName!=null && pairedDeviceAddress != null) {
+                                editor.putString("deviceName", mConnectedDeviceName);
+                                editor.putString("deviceAddress", pairedDeviceAddress);
+                                Log.i(TAG, mConnectedDeviceName + " " + pairedDeviceAddress);
+                                editor.commit();
+                            }
+
+                            programSelectionLL.setVisibility(View.VISIBLE);
+                            //defaultTV.setVisibility(View.GONE);
+                            defaultTV.setText("Connected to: " + mConnectedDeviceName + ".");
+                            connectBT.setVisible(false);
+                            disconnectBT.setVisible(true);
+                            if (programSelectionSpinner.getSelectedItem().toString().equals("Microsoft PowerPoint")){
+                                ppt.setVisibility(View.VISIBLE);
+                                mediaPlay.setVisibility(View.GONE);
+                            }
+                            else if(programSelectionSpinner.getSelectedItem().toString().equals("Windows Media Player")) {
+                                ppt.setVisibility(View.GONE);
+                                mediaPlay.setVisibility(View.VISIBLE);
+                            }
+                            break;
+                        case BluetoothChatService.STATE_CONNECTING:
+                            tv.setText("");
+                            tv.setBackground(getResources().getDrawable(R.drawable.connecting));
+                            break;
+                        case BluetoothChatService.STATE_LISTEN:
+                        case BluetoothChatService.STATE_NONE:
+                            //setStatus(R.string.title_not_connected);
+                            tv.setText("");
+                            tv.setBackground(getResources().getDrawable(R.drawable.disconnected));
+
+                            defaultTV.setText(R.string.not_connected_msg);
+                            //defaultTV.setVisibility(View.VISIBLE);
+                            programSelectionLL.setVisibility(View.GONE);
+                            ppt.setVisibility(View.GONE);
+                            mediaPlay.setVisibility(View.GONE);
+
+                            if(hasOnCreateOptionsMenuBeenCreated =="YES") {
+                                connectBT.setVisible(true);
+                                disconnectBT.setVisible(false);
+                            }
+                            break;
+                    }
+                    break;
+                case MESSAGE_WRITE:
+                    byte[] writeBuf = (byte[]) msg.obj;
+                    // construct a string from the buffer
+                    String writeMessage = new String(writeBuf);
+                    //mConversationArrayAdapter.add("Me:  " + writeMessage);
+                    Toast.makeText(getApplicationContext(),writeMessage, Toast.LENGTH_SHORT).show();
+                    break;
+                case MESSAGE_READ:
+                    byte[] readBuf = (byte[]) msg.obj;
+                    // construct a string from the valid bytes in the buffer
+                    String readMessage = new String(readBuf, 0, msg.arg1);
+                    //mConversationArrayAdapter.add(mConnectedDeviceName+":  " + readMessage);
+                    Toast.makeText(getApplicationContext(),readMessage,Toast.LENGTH_SHORT).show();
+                    break;
+                case MESSAGE_DEVICE_NAME:
+                    // save the connected device's name
+                    mConnectedDeviceName = msg.getData().getString(DEVICE_NAME);
+                    //Toast.makeText(getApplicationContext(), "Connected to "
+                    //        + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
+
+                    break;
+                case MESSAGE_TOAST:
+                    //Toast.makeText(getApplicationContext(), msg.getData().getString(TOAST),
+                    //        Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
+    };
+
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+
+            if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
+                final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,
+                        BluetoothAdapter.ERROR);
+                switch (state) {
+                    case BluetoothAdapter.STATE_OFF:
+
+                        break;
+                    case BluetoothAdapter.STATE_TURNING_OFF:
+                        mChatService.stop();
+                        break;
+                    case BluetoothAdapter.STATE_ON:
+
+                        break;
+                    case BluetoothAdapter.STATE_TURNING_ON:
+
+                        break;
+                }
+            }
+        }
+    };
 
     @Override
     public void onBackPressed() {
@@ -713,7 +768,7 @@ public class BluetoothChat extends Activity {
                     public void onClick(DialogInterface dialog, int which) {
                         //finish();0
                         mChatService.stop();
-                        //mBluetoothAdapter.disable();
+                        mBluetoothAdapter.disable();
                         System.exit(0);
                     }
 

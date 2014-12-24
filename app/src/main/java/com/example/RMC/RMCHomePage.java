@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.app.Activity;
 import android.os.CountDownTimer;
@@ -44,6 +45,9 @@ public class RMCHomePage extends Activity {
         //exitBtn = (Button) findViewById(R.id.exitBtn);
         //status = (TextView) findViewById(R.id.status);
 
+        // Register for broadcasts on BluetoothAdapter state change
+        IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
+        registerReceiver(mReceiver, filter);
 
         if (BA.isEnabled()) {
             //discoverBtn.setVisibility(View.VISIBLE);
@@ -57,7 +61,7 @@ public class RMCHomePage extends Activity {
             startActivityForResult(turnOn, 0);*/
             BluetoothAdapter.getDefaultAdapter().enable();
 
-            new CountDownTimer(2000, 1000) {
+            /*new CountDownTimer(2000, 1000) {
 
                 public void onTick(long millisUntilFinished) {
                     //mTextField.setText("seconds remaining: " + millisUntilFinished / 1000);
@@ -71,7 +75,7 @@ public class RMCHomePage extends Activity {
                     startActivity(intent);
                     RMCHomePage.this.finish();
                 }
-            }.start();
+            }.start();*/
         }
         if (BA.isEnabled()) {
             //discoverBtn.setVisibility(View.VISIBLE);
@@ -218,5 +222,40 @@ public class RMCHomePage extends Activity {
         }
     };
 
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
 
+            if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
+                final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,
+                        BluetoothAdapter.ERROR);
+                switch (state) {
+                    case BluetoothAdapter.STATE_OFF:
+
+                        break;
+                    case BluetoothAdapter.STATE_TURNING_OFF:
+
+                        break;
+                    case BluetoothAdapter.STATE_ON:
+                        Log.i("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "22222222222222222222222222222222222222");
+                        Intent mainPage = new Intent(
+                                RMCHomePage.this,
+                                BluetoothChat.class);
+                        startActivity(mainPage);
+                        RMCHomePage.this.finish();
+                        break;
+                    case BluetoothAdapter.STATE_TURNING_ON:
+                        Log.i("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "HEREEEEEEEEEEEEEEEEEEEEE");
+                        break;
+                }
+            }
+        }
+    };
+
+    @Override
+    protected void onDestroy() {
+        unregisterReceiver(mReceiver);
+        super.onDestroy();
+    }
 }

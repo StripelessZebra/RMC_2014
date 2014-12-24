@@ -11,6 +11,9 @@
         android:title="Connect a Device"
         android:showAsAction="always|withText" />
 
+    <item android:id="@+id/disconnectDevice"
+        android:title="Disconnect"
+        android:showAsAction="always|withText" />
 
     <!--android:icon="@android:drawable/ic_menu_search"-->
     <!--android:icon="@android:drawable/ic_menu_mylocation"-->

@@ -241,6 +241,13 @@ public class DeviceListActivity extends Activity {
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
+            if (mBtAdapter.getScanMode() !=
+                    BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
+                Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+                discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+                startActivity(discoverableIntent);
+            }
+
             doDiscovery();
             item.setVisible(false);
             mNewDevicesArrayAdapter.clear();
