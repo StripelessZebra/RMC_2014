@@ -11,8 +11,6 @@
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.VIBRATE" />
-
-
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="18" />
@@ -27,9 +25,9 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.example.RMC.RMCHomePage"
+            android:name=".RMCHomePage"
             android:label="@string/app_name"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -37,24 +35,28 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.example.RMC.BluetoothChat"
+            android:name=".BluetoothChat"
             android:label="@string/app_name"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="com.example.RMC.BluetoothChatService"
+            android:name=".BluetoothChatService"
             android:label="@string/app_name"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="com.example.RMC.DeviceListActivity"
+            android:name=".DeviceListActivity"
             android:label="@string/app_name"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="com.example.RMC.CustomProgramList"
+            android:name=".CustomProgramList"
             android:label="@string/app_name"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".UserManual"
+            android:label="@string/app_name" >
         </activity>
     </application>
 

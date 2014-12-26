@@ -6,6 +6,10 @@
         android:orderInCategory="100"
         android:showAsAction="always|withText" />-->
 
+    <item android:id="@+id/userManual"
+        android:title="User Manual"
+        android:icon="@drawable/help"
+        android:showAsAction="always"/>
 
     <item android:id="@+id/secure_connect_scan"
         android:title="Connect a Device"

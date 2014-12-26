@@ -3,7 +3,7 @@
 
     <string name="app_name">RMC</string>
     <string name="action_settings">Settings</string>
-    <string name="hello_world">Virtual Pool 2014</string>
+    <string name="hello_world">RMC</string>
     <string name="title_activity_test">TestActivity</string>
     <string name="title_activity_how_to_play">How_to_play</string>
     <string name="title_activity_terms_and_conditions">TermsAndConditions</string>
@@ -18,8 +18,7 @@
     <string name="title_other_devices">OtherDevices</string>
     <string name="button_scan">ButtonScan</string>
     <string name="send">Send</string>
-
-    <string name="not_connected_msg">"You are not connected to a device &#10548; "</string>
+    <string name="not_connected_msg">"You are not connected to a device ⤴ "</string>
 
     <!-- BluetoothChat -->
     <string name="not_connected">You are not connected to a device</string>
@@ -40,5 +39,21 @@
     <string name="discoverable">Make discoverable</string>
     <string name="secure_connect_scan">Scan and Connect a device</string>
     <string name="title_activity_custom_program_list">CustomProgramList</string>
+    <string name="title_activity_user_manual">UserManual</string>
 
+    <!-- User Manual -->
+    <string name="connectADevice">If you have successfully paired a device via bluetooth in this application,
+        RMC automatically attempts to connect the latest paired device every time you enter the application.</string>
+    <string name="connectADevice2">If the device is not available/no device has been paired in this application
+        before, making use of the &lt;u&gt;Connect A Device&lt;/u&gt; option allows you to connect
+        to your desired device.</string>
+
+    <string name="connectedIcon">Green Icon -> Successfully Connected</string>
+    <string name="connectingIcon">Orange Icon -> Attempting to Connect</string>
+    <string name="disconnectedIcon">Red Icon -> Unsuccessful Connection</string>
+    <string name="disconnectBtn">&lt;u&gt;Disconnect&lt;/u&gt; option removes the connection with the paired device.</string>
+
+    <string name="programSelection">There are currently 2 supported programs (Microsoft PowerPoint, Windows Media Player).
+        It is only available when the device is successfully connected.</string>
+    <string name="programSelection2">Once a program is selected, you are able to control it through buttons or through motion control. If the motion control switch is ON, you are able to control it via gestures.</string>
 </resources>

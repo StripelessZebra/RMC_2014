@@ -238,7 +238,6 @@ public class RMCHomePage extends Activity {
 
                         break;
                     case BluetoothAdapter.STATE_ON:
-                        Log.i("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "22222222222222222222222222222222222222");
                         Intent mainPage = new Intent(
                                 RMCHomePage.this,
                                 BluetoothChat.class);
@@ -246,7 +245,6 @@ public class RMCHomePage extends Activity {
                         RMCHomePage.this.finish();
                         break;
                     case BluetoothAdapter.STATE_TURNING_ON:
-                        Log.i("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "HEREEEEEEEEEEEEEEEEEEEEE");
                         break;
                 }
             }

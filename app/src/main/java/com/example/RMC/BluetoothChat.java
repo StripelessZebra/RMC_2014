@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2009 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.example.RMC;
 
 import android.annotation.TargetApi;
@@ -28,8 +12,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -43,6 +32,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -50,16 +40,18 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.os.Vibrator;
+import android.widget.ToggleButton;
 
 import javax.crypto.Mac;
 
 /**
  * This is the main Activity that displays the current chat session.
  */
-public class BluetoothChat extends Activity {
+public class BluetoothChat extends Activity implements SensorEventListener {
     // Debugging
     private static final String TAG = "BluetoothChat";
     private static final boolean D = true;
@@ -96,14 +88,19 @@ public class BluetoothChat extends Activity {
     // Member object for the chat services
     private BluetoothChatService mChatService = null;
 
+    /**Imports for sensors**/
+    private SensorManager mSensorManager;
+    private Sensor mAccelerometer;
+
     TextView tv, defaultTV, deviceDetails;
-    LinearLayout programSelectionLL,latestDeviceInfo;
+    LinearLayout programSelectionLL, toggleButtonLL, latestDeviceInfo;
     RelativeLayout ppt,mediaPlay;
     Spinner programSelectionSpinner;
     CustomProgramList spinnerAdapter;
+    Switch toggle;
     ImageView pptMinimize, pptMaximize, pptLeft, pptRight, mediaPlayMinimize, mediaPlayMaximize, mediaPlayMute, mediaPlayUnmute, mediaPlayPlay, mediaPlayStop, mediaPlayPause;
     SharedPreferences.Editor editor;
-    String pairedDeviceAddress,hasOnCreateOptionsMenuBeenCreated;
+    String pairedDeviceAddress,hasOnCreateOptionsMenuBeenCreated,isDeviceConnected = "",hasSensorBeenUsedRecently="", isMotionControlSelected="";
     Menu settingsMenu;
     MenuItem connectBT, disconnectBT;
 
@@ -121,9 +118,13 @@ public class BluetoothChat extends Activity {
         super.onCreate(savedInstanceState);
         if(D) Log.e(TAG, "+++ ON CREATE +++");
 
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+
         // Register for broadcasts on BluetoothAdapter state change
-        IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
-        registerReceiver(mReceiver, filter);
+        this.registerReceiver(mReceiver, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
+
         editor = getSharedPreferences("RMCSP", MODE_PRIVATE).edit();
         // Get local Bluetooth adapter
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -140,7 +141,7 @@ public class BluetoothChat extends Activity {
             String deviceAddress = prefs.getString("deviceAddress", null);
 
             if (deviceName == null && deviceAddress == null) {
-                if(hasOnCreateOptionsMenuBeenCreated =="YES") {
+                if(hasOnCreateOptionsMenuBeenCreated =="YES" && isDeviceConnected =="") {
                     connectBT.setVisible(true);
                     disconnectBT.setVisible(false);
                 }
@@ -184,6 +185,8 @@ public class BluetoothChat extends Activity {
             }
         });*/
 
+        toggleButtonLL = (LinearLayout) findViewById(R.id.toggleButtonLL);
+        toggleButtonLL.setVisibility(View.GONE);
 
         programSelectionLL = (LinearLayout) findViewById(R.id.programSelectionLL);
         programSelectionLL.setVisibility(View.GONE);
@@ -203,13 +206,14 @@ public class BluetoothChat extends Activity {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 //Toast.makeText(getApplicationContext(),programSelectionSpinner.getSelectedItem().toString(),Toast.LENGTH_SHORT).show();
-                if(programSelectionSpinner.getSelectedItem().toString() == "Microsoft PowerPoint") {
-                    ppt.setVisibility(View.VISIBLE);
-                    mediaPlay.setVisibility(View.GONE);
-                }
-                else if(programSelectionSpinner.getSelectedItem().toString() == "Windows Media Player") {
-                    mediaPlay.setVisibility(View.VISIBLE);
-                    ppt.setVisibility(View.GONE);
+                if(isMotionControlSelected!="YES"){
+                    if (programSelectionSpinner.getSelectedItem().toString().equals("Microsoft PowerPoint")) {
+                        ppt.setVisibility(View.VISIBLE);
+                        mediaPlay.setVisibility(View.GONE);
+                    } else if (programSelectionSpinner.getSelectedItem().toString().equals("Windows Media Player")) {
+                        ppt.setVisibility(View.GONE);
+                        mediaPlay.setVisibility(View.VISIBLE);
+                    }
                 }
             }
 
@@ -320,7 +324,28 @@ public class BluetoothChat extends Activity {
             }
         });
 
-
+        toggle = (Switch) findViewById(R.id.toggleButton);
+        toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    // The toggle is enabled
+                    ppt.setVisibility(View.GONE);
+                    mediaPlay.setVisibility(View.GONE);
+                    isMotionControlSelected="YES";
+                } else {
+                    // The toggle is disabled
+                    if (programSelectionSpinner.getSelectedItem().toString().equals("Microsoft PowerPoint")){
+                        ppt.setVisibility(View.VISIBLE);
+                        mediaPlay.setVisibility(View.GONE);
+                    }
+                    else if(programSelectionSpinner.getSelectedItem().toString().equals("Windows Media Player")) {
+                        ppt.setVisibility(View.GONE);
+                        mediaPlay.setVisibility(View.VISIBLE);
+                    }
+                    isMotionControlSelected="";
+                }
+            }
+        });
 
 
 
@@ -419,9 +444,74 @@ public class BluetoothChat extends Activity {
 				*/
     }
 
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        float x = event.values[0];
+        float y = event.values[1];
+        float z = event.values[2];
+
+        if(isMotionControlSelected=="YES") {
+            if (isDeviceConnected == "YES" && hasSensorBeenUsedRecently == "") {
+                if (Math.round(x) > 2) {
+                    if (Math.round(x) >= 9) {
+                        Log.i("ACCELEROMETER X: ", "LEFT " + String.valueOf(x));
+                        String message = "ppt pre";
+                        sendMessage(message);
+                        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                        // Vibrate for 400 milliseconds
+                        v.vibrate(200);
+                        hasSensorBeenUsedRecently = "YES";
+                        new CountDownTimer(1000, 1000) {
+
+                            public void onTick(long millisUntilFinished) {
+                            }
+
+                            public void onFinish() {
+                                hasSensorBeenUsedRecently = "";
+                            }
+                        }.start();
+                    }
+                } else if (Math.round(x) < -2) {
+
+                    if (Math.round(x) <= -9) {
+                        Log.i("ACCELEROMETER X: ", "RIGHT" + String.valueOf(x));
+                        String message = "ppt nex";
+                        sendMessage(message);
+                        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                        // Vibrate for 400 milliseconds
+                        v.vibrate(200);
+                        hasSensorBeenUsedRecently = "YES";
+                        new CountDownTimer(1000, 1000) {
+
+                            public void onTick(long millisUntilFinished) {
+                            }
+
+                            public void onFinish() {
+                                hasSensorBeenUsedRecently = "";
+                            }
+                        }.start();
+                    }
+                } else if (Math.round(x) < 2 || Math.round(x) > -2) {
+                }
+
+                if (Math.round(y) > 2) {
+                    //Log.i("ACCELEROMETER Y: ", "UP?" + String.valueOf(y));
+                } else if (Math.round(y) < -2) {
+                    //Log.i("ACCELEROMETER Y: ", "DOWN?" +String.valueOf(y));
+                } else if (Math.round(y) < 2 || Math.round(y) > -2) {
+                }
+            }
+        }
+    }
+
     private AdapterView.OnItemClickListener programClickListener = new AdapterView.OnItemClickListener() {
         public void onItemClick(AdapterView<?> av, View v, int arg2, long arg3) {
-
         }
     };
 
@@ -429,7 +519,6 @@ public class BluetoothChat extends Activity {
     public void onStart() {
         super.onStart();
         if(D) Log.e(TAG, "++ ON START ++");
-
         // If BT is not on, request that it be enabled.
         // setupChat() will then be called during onActivityResult
         if (!mBluetoothAdapter.isEnabled()) {
@@ -445,7 +534,6 @@ public class BluetoothChat extends Activity {
     public synchronized void onResume() {
         super.onResume();
         if(D) Log.e(TAG, "+ ON RESUME +");
-
         // Performing this check in onResume() covers the case in which BT was
         // not enabled during onStart(), so we were paused to enable it...
         // onResume() will be called when ACTION_REQUEST_ENABLE activity returns.
@@ -456,27 +544,33 @@ public class BluetoothChat extends Activity {
                 mChatService.start();
             }
         }
+        if(hasOnCreateOptionsMenuBeenCreated =="YES" && isDeviceConnected=="YES") {
+            connectBT.setVisible(false);
+            disconnectBT.setVisible(true);
+        }
+        else if(hasOnCreateOptionsMenuBeenCreated =="YES" && isDeviceConnected =="") {
+            connectBT.setVisible(true);
+            disconnectBT.setVisible(false);
+        }
     }
 
     private void setupChat() {
         Log.d(TAG, "setupChat()");
-
-
         // Initialize the BluetoothChatService to perform bluetooth connections
         mChatService = new BluetoothChatService(this, mHandler);
-
-
     }
 
     @Override
     public synchronized void onPause() {
         super.onPause();
+        mChatService.stop();
         if(D) Log.e(TAG, "- ON PAUSE -");
     }
 
     @Override
     public void onStop() {
         super.onStop();
+        mChatService.stop();
         if(D) Log.e(TAG, "-- ON STOP --");
     }
 
@@ -508,13 +602,11 @@ public class BluetoothChat extends Activity {
             Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT).show();
             return;
         }
-
         // Check that there's actually something to send
         if (message.length() > 0) {
             // Get the message bytes and tell the BluetoothChatService to write
             byte[] send = message.getBytes();
             mChatService.write(send);
-
             // Reset out string buffer to zero and clear the edit text field
             //mOutStringBuffer.setLength(0);
             //mOutEditText.setText(mOutStringBuffer);
@@ -625,7 +717,11 @@ public class BluetoothChat extends Activity {
                 disconnectBT.setVisible(false);
                 //BluetoothAdapter.getDefaultAdapter().disable();
                 //BluetoothAdapter.getDefaultAdapter().enable();
-
+                return true;
+            case R.id.userManual:
+                Intent userManual = new Intent(BluetoothChat.this, UserManual.class);
+                startActivity(userManual);
+                return true;
         /*case R.id.insecure_connect_scan:
             // Launch the DeviceListActivity to see devices and do scan
             serverIntent = new Intent(this, DeviceListActivity.class);
@@ -663,18 +759,23 @@ public class BluetoothChat extends Activity {
                                 editor.commit();
                             }
 
+                            isDeviceConnected = "YES";
                             programSelectionLL.setVisibility(View.VISIBLE);
+                            toggleButtonLL.setVisibility(View.VISIBLE);
                             //defaultTV.setVisibility(View.GONE);
                             defaultTV.setText("Connected to: " + mConnectedDeviceName + ".");
-                            connectBT.setVisible(false);
-                            disconnectBT.setVisible(true);
-                            if (programSelectionSpinner.getSelectedItem().toString().equals("Microsoft PowerPoint")){
-                                ppt.setVisibility(View.VISIBLE);
-                                mediaPlay.setVisibility(View.GONE);
+                            if(hasOnCreateOptionsMenuBeenCreated =="YES" && isDeviceConnected=="YES") {
+                                connectBT.setVisible(false);
+                                disconnectBT.setVisible(true);
                             }
-                            else if(programSelectionSpinner.getSelectedItem().toString().equals("Windows Media Player")) {
-                                ppt.setVisibility(View.GONE);
-                                mediaPlay.setVisibility(View.VISIBLE);
+                            if(isMotionControlSelected!="YES"){
+                                if (programSelectionSpinner.getSelectedItem().toString().equals("Microsoft PowerPoint")) {
+                                    ppt.setVisibility(View.VISIBLE);
+                                    mediaPlay.setVisibility(View.GONE);
+                                } else if (programSelectionSpinner.getSelectedItem().toString().equals("Windows Media Player")) {
+                                    ppt.setVisibility(View.GONE);
+                                    mediaPlay.setVisibility(View.VISIBLE);
+                                }
                             }
                             break;
                         case BluetoothChatService.STATE_CONNECTING:
@@ -692,8 +793,10 @@ public class BluetoothChat extends Activity {
                             programSelectionLL.setVisibility(View.GONE);
                             ppt.setVisibility(View.GONE);
                             mediaPlay.setVisibility(View.GONE);
+                            toggleButtonLL.setVisibility(View.GONE);
+                            isDeviceConnected = "";
 
-                            if(hasOnCreateOptionsMenuBeenCreated =="YES") {
+                            if(hasOnCreateOptionsMenuBeenCreated =="YES" && isDeviceConnected =="") {
                                 connectBT.setVisible(true);
                                 disconnectBT.setVisible(false);
                             }
@@ -730,27 +833,27 @@ public class BluetoothChat extends Activity {
     };
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+
         @Override
         public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
 
+            String action = intent.getAction();
+
+            // It means the user has changed his bluetooth state.
             if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
-                final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,
-                        BluetoothAdapter.ERROR);
-                switch (state) {
-                    case BluetoothAdapter.STATE_OFF:
 
-                        break;
-                    case BluetoothAdapter.STATE_TURNING_OFF:
-                        mChatService.stop();
-                        break;
-                    case BluetoothAdapter.STATE_ON:
-
-                        break;
-                    case BluetoothAdapter.STATE_TURNING_ON:
-
-                        break;
+                if (mBluetoothAdapter.getState() == BluetoothAdapter.STATE_TURNING_OFF) {
+                    // The user bluetooth is turning off yet, but it is not disabled yet.
+                    Log.i("HEREEEEEEEEEEE",  "HEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+                    mChatService.stop();
+                    return;
                 }
+
+                if (mBluetoothAdapter.getState() == BluetoothAdapter.STATE_OFF) {
+                    // The user bluetooth is already disabled.
+                    return;
+                }
+
             }
         }
     };

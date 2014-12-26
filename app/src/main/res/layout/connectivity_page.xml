@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#fff"
-
     >
 
     <TextView
@@ -98,9 +97,30 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/toggleButtonLL"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/programSelectionLL"
+        android:layout_marginTop="5dp"
+        android:gravity="center_vertical|center_horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18dp"
+            android:text="Motion Control: "/>
+        <Switch
+            android:id="@+id/toggleButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textOn="ON"
+            android:textOff="OFF" />
+    </LinearLayout>
+
     <RelativeLayout
         android:id="@+id/ppt"
-        android:layout_below="@+id/programSelectionLL"
+        android:layout_below="@+id/toggleButtonLL"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:gravity="center_vertical|center_horizontal"
@@ -145,12 +165,11 @@
             android:layout_height="60dp"
             android:layout_marginTop="50dp"
             android:layout_marginBottom="50dp"/>
-
     </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/mediaPlay"
-        android:layout_below="@+id/programSelectionLL"
+        android:layout_below="@+id/toggleButtonLL"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:gravity="center_vertical|center_horizontal"
@@ -173,8 +192,6 @@
             android:src="@drawable/ic_action_full_screen"
             android:layout_width="60dp"
             android:layout_height="60dp"/>
-
-
 
         <ImageView
             android:id="@+id/mediaPlayMute"
@@ -199,8 +216,6 @@
             android:layout_height="60dp"
             />
 
-
-
         <ImageView
             android:id="@+id/mediaPlayPlay"
             android:layout_below="@+id/mediaPlayMute"
@@ -209,7 +224,6 @@
             android:src="@drawable/ic_action_play"
             android:layout_width="60dp"
             android:layout_height="60dp"
-
             android:layout_marginBottom="5dp"/>
 
         <ImageView
@@ -222,7 +236,6 @@
             android:src="@drawable/ic_action_stop"
             android:layout_width="60dp"
             android:layout_height="60dp"
-
             android:layout_marginBottom="5dp"/>
 
         <ImageView
@@ -237,114 +250,5 @@
             android:layout_marginLeft="60dp"
             android:layout_marginBottom="5dp"/>
 
-
-
     </RelativeLayout>
-
-
-
-    <!--    <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal" >
-
-        </LinearLayout>
-
-         <ImageView
-             android:id="@+id/imageView3"
-             android:layout_width="wrap_content"
-             android:layout_height="wrap_content"
-             android:layout_alignBottom="@+id/textView2"
-             android:layout_marginLeft="20dp"
-             android:layout_toRightOf="@+id/textView2"
-             android:src="@drawable/indicator" />
-
-         <ImageButton
-             android:id="@+id/imageButton1"
-             android:layout_width="wrap_content"
-             android:layout_height="wrap_content"
-             android:padding="20dp"
-             android:layout_alignTop="@+id/imageButton4"
-             android:layout_toLeftOf="@+id/imageButton4"
-             android:src="@drawable/leftbutton" />
-
-         <ImageButton
-             android:id="@+id/imageButton3"
-             android:layout_width="wrap_content"
-             android:layout_height="wrap_content"
-             android:padding="20dp"
-             android:layout_above="@+id/imageButton1"
-             android:layout_toRightOf="@+id/imageButton1"
-             android:src="@drawable/topbutton" />
-
-         <ImageButton
-             android:id="@+id/imageButton2"
-             android:layout_width="wrap_content"
-             android:layout_height="wrap_content"
-             android:padding="20dp"
-             android:layout_alignParentBottom="true"
-             android:layout_marginBottom="54dp"
-             android:layout_toRightOf="@+id/imageButton4"
-             android:src="@drawable/rightbutton" />
-
-         <ImageButton
-             android:id="@+id/imageButton4"
-             android:layout_width="wrap_content"
-             android:layout_height="wrap_content"
-             android:padding="20dp"
-             android:layout_alignTop="@+id/imageButton2"
-             android:layout_centerHorizontal="true"
-             android:src="@drawable/bottombutton" />
-
-
-            >-->
-
-
-    <!--<Button
-        android:id="@+id/button_send"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:text="@string/send"
-        android:visibility="invisible" />
-
-    <ListView
-        android:id="@+id/in"
-        android:layout_width="match_parent"
-        android:layout_height="206dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:stackFromBottom="true"
-        android:transcriptMode="alwaysScroll"
-        android:visibility="invisible"
-        android:layout_centerInParent="true">
-    </ListView>
-
-    <EditText
-        android:id="@+id/edit_text_out"
-
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/button_send"
-        android:layout_alignBottom="@+id/button_send"
-        android:layout_alignParentLeft="true"
-        android:layout_toLeftOf="@+id/button_send"
-        android:layout_weight="1"
-        android:ems="10"
-        android:visibility="invisible">
-
-        <requestFocus />
-    </EditText>-->
-
-    <!--<TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/imageButton1"
-        android:layout_centerVertical="true"
-        android:text="Connection:"
-        android:textColor="#FFFFFF"
-        android:textSize="20dp" />-->
-
 </RelativeLayout>
