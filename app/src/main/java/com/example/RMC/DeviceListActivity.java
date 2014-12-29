@@ -16,6 +16,8 @@
 
 package com.example.RMC;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
 
 import android.app.ActionBar;
@@ -37,6 +39,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Toast;
 
 /**
  * This Activity appears as a dialog. It lists any paired devices and
@@ -56,6 +59,7 @@ public class DeviceListActivity extends Activity {
     private BluetoothAdapter mBtAdapter;
     private ArrayAdapter<String> mPairedDevicesArrayAdapter;
     private ArrayAdapter<String> mNewDevicesArrayAdapter;
+    ArrayList scannedDevicesAL = new ArrayList();
 
     TextView pairedTV, newTV, ownDevice,noPairedDevices, noNewDevices;
     Menu settingsMenu;
@@ -179,6 +183,7 @@ public class DeviceListActivity extends Activity {
         public void onItemClick(AdapterView<?> av, View v, int arg2, long arg3) {
             // Cancel discovery because it's costly and we're about to connect
             mBtAdapter.cancelDiscovery();
+            mNewDevicesArrayAdapter.clear();
 
             // Get the device MAC address, which is the last 17 chars in the View
             String info = ((TextView) v).getText().toString();
@@ -207,10 +212,24 @@ public class DeviceListActivity extends Activity {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 // If it's already paired, skip it, because it's been listed already
                 if (device.getBondState() != BluetoothDevice.BOND_BONDED) {
-                    mNewDevicesArrayAdapter.add(device.getName() + "\n" + device.getAddress());
+                    scannedDevicesAL.add(device.getName() + "\n" + device.getAddress());
+                    //mNewDevicesArrayAdapter.add(device.getName() + "\n" + device.getAddress());
+                    Log.i("DeviceListActivity", scannedDevicesAL.toString());
+                    //To remove duplicates
+                    HashSet hs = new HashSet();
+                    hs.addAll(scannedDevicesAL);
+                    scannedDevicesAL.clear();
+                    scannedDevicesAL.addAll(hs);
                 }
                 // When discovery is finished, change the Activity title
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
+
+                for(int i=0; i<scannedDevicesAL.size();i++){
+                    if(!scannedDevicesAL.get(i).toString().contains("null")) {
+                        mNewDevicesArrayAdapter.add(scannedDevicesAL.get(i).toString());
+                    }
+                }
+
                 setProgressBarIndeterminateVisibility(false);
                 //setTitle(R.string.select_device);
                 MenuItem item = settingsMenu.findItem(R.id.action_settings);

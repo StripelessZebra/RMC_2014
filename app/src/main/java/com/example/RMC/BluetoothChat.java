@@ -579,6 +579,7 @@ public class BluetoothChat extends Activity implements SensorEventListener {
         super.onDestroy();
         // Stop the Bluetooth chat services
         if (mChatService != null) mChatService.stop();
+        mBluetoothAdapter.disable();
         if(D) Log.e(TAG, "--- ON DESTROY ---");
     }
 
@@ -844,7 +845,6 @@ public class BluetoothChat extends Activity implements SensorEventListener {
 
                 if (mBluetoothAdapter.getState() == BluetoothAdapter.STATE_TURNING_OFF) {
                     // The user bluetooth is turning off yet, but it is not disabled yet.
-                    Log.i("HEREEEEEEEEEEE",  "HEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
                     mChatService.stop();
                     return;
                 }

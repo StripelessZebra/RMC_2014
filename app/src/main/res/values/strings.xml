@@ -18,7 +18,7 @@
     <string name="title_other_devices">OtherDevices</string>
     <string name="button_scan">ButtonScan</string>
     <string name="send">Send</string>
-    <string name="not_connected_msg">"You are not connected to a device ⤴ "</string>
+    <string name="not_connected_msg">"You are not connected to a device" </string>
 
     <!-- BluetoothChat -->
     <string name="not_connected">You are not connected to a device</string>
