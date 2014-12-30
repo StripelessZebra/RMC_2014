@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -38,6 +39,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.NumberPicker;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
@@ -51,7 +53,7 @@ import javax.crypto.Mac;
 /**
  * This is the main Activity that displays the current chat session.
  */
-public class BluetoothChat extends Activity implements SensorEventListener {
+public class BluetoothChat extends Activity implements SensorEventListener, NumberPicker.OnValueChangeListener {
     // Debugging
     private static final String TAG = "BluetoothChat";
     private static final boolean D = true;
@@ -102,7 +104,7 @@ public class BluetoothChat extends Activity implements SensorEventListener {
     SharedPreferences.Editor editor;
     String pairedDeviceAddress,hasOnCreateOptionsMenuBeenCreated,isDeviceConnected = "",hasSensorBeenUsedRecently="", isMotionControlSelected="";
     Menu settingsMenu;
-    MenuItem connectBT, disconnectBT;
+    MenuItem connectBT, disconnectBT, settingOption;
 
     String[] web = {
             "Microsoft PowerPoint",
@@ -145,8 +147,8 @@ public class BluetoothChat extends Activity implements SensorEventListener {
                     connectBT.setVisible(true);
                     disconnectBT.setVisible(false);
                 }
-                //Toast.makeText(getApplicationContext(),"ABC", Toast.LENGTH_SHORT).show();
-            } else if (deviceName != null && deviceAddress != null) {
+            }
+            else if (deviceName != null && deviceAddress != null) {
                 //deviceDetails = (TextView) findViewById(R.id.deviceDetails);
                 //deviceDetails.setText("Device Name: " + deviceName + "\nMAC Address: " + deviceAddress);
                 //latestDeviceInfo = (LinearLayout)findViewById(R.id.latestDeviceInfo);
@@ -456,10 +458,14 @@ public class BluetoothChat extends Activity implements SensorEventListener {
         float y = event.values[1];
         float z = event.values[2];
 
+        SharedPreferences prefs = getSharedPreferences("RMCSP", MODE_PRIVATE);
+        int leftGestureValueSensitivity = prefs.getInt("leftGestureValue", 9);
+        int rightGestureValueSensitivity = prefs.getInt("rightGestureValue", 9);
+        String rightGestureValueSensitivityConverted = "-"+rightGestureValueSensitivity;
+
         if(isMotionControlSelected=="YES") {
             if (isDeviceConnected == "YES" && hasSensorBeenUsedRecently == "") {
-                if (Math.round(x) > 2) {
-                    if (Math.round(x) >= 9) {
+                if (Math.round(x) >= leftGestureValueSensitivity) {
                         Log.i("ACCELEROMETER X: ", "LEFT " + String.valueOf(x));
                         String message = "ppt pre";
                         sendMessage(message);
@@ -476,10 +482,7 @@ public class BluetoothChat extends Activity implements SensorEventListener {
                                 hasSensorBeenUsedRecently = "";
                             }
                         }.start();
-                    }
-                } else if (Math.round(x) < -2) {
-
-                    if (Math.round(x) <= -9) {
+                } else if (Math.round(x) <= Integer.parseInt(rightGestureValueSensitivityConverted)) {
                         Log.i("ACCELEROMETER X: ", "RIGHT" + String.valueOf(x));
                         String message = "ppt nex";
                         sendMessage(message);
@@ -496,8 +499,8 @@ public class BluetoothChat extends Activity implements SensorEventListener {
                                 hasSensorBeenUsedRecently = "";
                             }
                         }.start();
-                    }
                 } else if (Math.round(x) < 2 || Math.round(x) > -2) {
+
                 }
 
                 if (Math.round(y) > 2) {
@@ -688,10 +691,23 @@ public class BluetoothChat extends Activity implements SensorEventListener {
         this.settingsMenu = menu;
         inflater.inflate(R.menu.connectivity_page, menu);
         connectBT = settingsMenu.findItem(R.id.secure_connect_scan);
-        connectBT.setVisible(true);
         disconnectBT = settingsMenu.findItem(R.id.disconnectDevice);
-        disconnectBT.setVisible(false);
+        settingOption = settingsMenu.findItem(R.id.calibrationSettings);
+        settingOption.setVisible(false);
+        //Checking if user has previously connected to any device through this app
+        SharedPreferences prefs = getSharedPreferences("RMCSP", MODE_PRIVATE);
+        String deviceName = prefs.getString("deviceName", null);
+        String deviceAddress = prefs.getString("deviceAddress", null);
         hasOnCreateOptionsMenuBeenCreated = "YES";
+        if (deviceName == null && deviceAddress == null) {
+            if(isDeviceConnected =="") {
+                connectBT.setVisible(true);
+                disconnectBT.setVisible(false);
+            }
+        } else{
+            connectBT.setVisible(false);
+            disconnectBT.setVisible(false);
+        }
         return true;
     }
 
@@ -722,6 +738,10 @@ public class BluetoothChat extends Activity implements SensorEventListener {
             case R.id.userManual:
                 Intent userManual = new Intent(BluetoothChat.this, UserManual.class);
                 startActivity(userManual);
+                return true;
+
+            case R.id.calibrationSettings:
+                displayDialog();
                 return true;
         /*case R.id.insecure_connect_scan:
             // Launch the DeviceListActivity to see devices and do scan
@@ -768,6 +788,7 @@ public class BluetoothChat extends Activity implements SensorEventListener {
                             if(hasOnCreateOptionsMenuBeenCreated =="YES" && isDeviceConnected=="YES") {
                                 connectBT.setVisible(false);
                                 disconnectBT.setVisible(true);
+                                settingOption.setVisible(true);
                             }
                             if(isMotionControlSelected!="YES"){
                                 if (programSelectionSpinner.getSelectedItem().toString().equals("Microsoft PowerPoint")) {
@@ -782,6 +803,10 @@ public class BluetoothChat extends Activity implements SensorEventListener {
                         case BluetoothChatService.STATE_CONNECTING:
                             tv.setText("");
                             tv.setBackground(getResources().getDrawable(R.drawable.connecting));
+                            if(hasOnCreateOptionsMenuBeenCreated =="YES") {
+                                connectBT.setVisible(false);
+                                disconnectBT.setVisible(false);
+                            }
                             break;
                         case BluetoothChatService.STATE_LISTEN:
                         case BluetoothChatService.STATE_NONE:
@@ -789,7 +814,7 @@ public class BluetoothChat extends Activity implements SensorEventListener {
                             tv.setText("");
                             tv.setBackground(getResources().getDrawable(R.drawable.disconnected));
 
-                            defaultTV.setText(R.string.not_connected_msg);
+                            defaultTV.setText(R.string.not_connected);
                             //defaultTV.setVisibility(View.VISIBLE);
                             programSelectionLL.setVisibility(View.GONE);
                             ppt.setVisibility(View.GONE);
@@ -800,6 +825,7 @@ public class BluetoothChat extends Activity implements SensorEventListener {
                             if(hasOnCreateOptionsMenuBeenCreated =="YES" && isDeviceConnected =="") {
                                 connectBT.setVisible(true);
                                 disconnectBT.setVisible(false);
+                                settingOption.setVisible(false);
                             }
                             break;
                     }
@@ -859,6 +885,60 @@ public class BluetoothChat extends Activity implements SensorEventListener {
     };
 
     @Override
+    public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+
+        Log.i("value is",""+newVal);
+
+    }
+
+
+    public void displayDialog()
+    {
+
+        final Dialog d = new Dialog(BluetoothChat.this);
+        d.setTitle("Motion Control Calibration");
+        d.setContentView(R.layout.settings);
+        Button saveSettings = (Button) d.findViewById(R.id.saveSettings);
+        Button cancelSettings = (Button) d.findViewById(R.id.cancelSettings);
+        SharedPreferences prefs = getSharedPreferences("RMCSP", MODE_PRIVATE);
+        final NumberPicker leftNP = (NumberPicker) d.findViewById(R.id.leftNumberPicker);
+        leftNP.setMaxValue(10);
+        leftNP.setMinValue(1);
+        leftNP.setValue(prefs.getInt("leftGestureValue", 9));
+        leftNP.setWrapSelectorWheel(false);
+        leftNP.setOnValueChangedListener(this);
+        final NumberPicker rightNP = (NumberPicker) d.findViewById(R.id.rightNumberPicker);
+        rightNP.setMaxValue(10);
+        rightNP.setMinValue(1);
+        rightNP.setValue(prefs.getInt("rightGestureValue", 9));
+        rightNP.setWrapSelectorWheel(false);
+        rightNP.setOnValueChangedListener(this);
+
+        saveSettings.setOnClickListener(new OnClickListener()
+        {
+            @Override
+            public void onClick(View v) {
+                // dismiss the dialog
+                editor.putInt("leftGestureValue", leftNP.getValue());
+                editor.putInt("rightGestureValue", rightNP.getValue());
+                editor.commit();
+                d.dismiss();
+            }
+        });
+        cancelSettings.setOnClickListener(new OnClickListener()
+        {
+            @Override
+            public void onClick(View v) {
+                // dismiss the dialog
+                d.dismiss();
+            }
+        });
+        d.show();
+
+
+    }
+
+    @Override
     public void onBackPressed() {
         //Toast.makeText(getApplicationContext(),"Exiting...", Toast.LENGTH_SHORT).show();
         new AlertDialog.Builder(this)
@@ -880,5 +960,4 @@ public class BluetoothChat extends Activity implements SensorEventListener {
                 .show();
         //super.onBackPressed();
     }
-
 }

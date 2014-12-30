@@ -1,0 +1,88 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <TextView
+        android:id="@+id/settingsInfoTV"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:textSize="16dp"
+        android:textStyle="bold|italic"
+        android:gravity="center"
+        android:text="*Note: The lower the value, the more sensitive."/>
+
+    <TextView
+        android:id="@+id/leftGestureTV"
+        android:layout_below="@+id/settingsInfoTV"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:textSize="16dp"
+        android:textStyle="bold|italic"
+        android:text="Left Gesture Sensitivity:"/>
+
+    <NumberPicker
+        android:id="@+id/leftNumberPicker"
+        android:layout_below="@+id/leftGestureTV"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_centerHorizontal="true"/>
+
+    <TextView
+        android:id="@+id/rightGestureTV"
+        android:layout_below="@+id/leftNumberPicker"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:textStyle="bold|italic"
+        android:textSize="16dp"
+        android:text="Right Gesture Sensitivity:"/>
+
+    <NumberPicker
+        android:id="@+id/rightNumberPicker"
+        android:layout_below="@+id/rightGestureTV"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/saveSettings"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:background="@drawable/settings_button_style"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="15dp"
+            android:text="Save"
+            />
+
+        <Button
+            android:id="@+id/cancelSettings"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:background="@drawable/settings_button_style"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginBottom="15dp"
+            android:text="Cancel"
+            />
+    </LinearLayout>
+
+
+</RelativeLayout>

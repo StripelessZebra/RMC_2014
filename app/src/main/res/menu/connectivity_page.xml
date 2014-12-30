@@ -9,10 +9,15 @@
     <item android:id="@+id/userManual"
         android:title="User Manual"
         android:icon="@drawable/help"
-        android:showAsAction="always"/>
+        android:showAsAction="always|withText"/>
+
+    <item android:id="@+id/calibrationSettings"
+        android:title="Settings"
+        android:icon="@drawable/ic_action_settings"
+        android:showAsAction="always|withText"/>
 
     <item android:id="@+id/secure_connect_scan"
-        android:title="Connect a Device"
+        android:title="Connect Device"
         android:showAsAction="always|withText" />
 
     <item android:id="@+id/disconnectDevice"
