@@ -104,7 +104,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
     SharedPreferences.Editor editor;
     String pairedDeviceAddress,hasOnCreateOptionsMenuBeenCreated,isDeviceConnected = "",hasSensorBeenUsedRecently="", isMotionControlSelected="";
     Menu settingsMenu;
-    MenuItem connectBT, disconnectBT, settingOption;
+    MenuItem connectBT, disconnectBT, settingOption,userManual;
 
     String[] web = {
             "Microsoft PowerPoint",
@@ -694,6 +694,8 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
         disconnectBT = settingsMenu.findItem(R.id.disconnectDevice);
         settingOption = settingsMenu.findItem(R.id.calibrationSettings);
         settingOption.setVisible(false);
+        userManual = settingsMenu.findItem(R.id.userManual);
+        userManual.setVisible(false);
         //Checking if user has previously connected to any device through this app
         SharedPreferences prefs = getSharedPreferences("RMCSP", MODE_PRIVATE);
         String deviceName = prefs.getString("deviceName", null);
@@ -789,6 +791,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                                 connectBT.setVisible(false);
                                 disconnectBT.setVisible(true);
                                 settingOption.setVisible(true);
+                                userManual.setVisible(false);
                             }
                             if(isMotionControlSelected!="YES"){
                                 if (programSelectionSpinner.getSelectedItem().toString().equals("Microsoft PowerPoint")) {
@@ -806,6 +809,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                             if(hasOnCreateOptionsMenuBeenCreated =="YES") {
                                 connectBT.setVisible(false);
                                 disconnectBT.setVisible(false);
+                                userManual.setVisible(false);
                             }
                             break;
                         case BluetoothChatService.STATE_LISTEN:
@@ -826,6 +830,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                                 connectBT.setVisible(true);
                                 disconnectBT.setVisible(false);
                                 settingOption.setVisible(false);
+                                userManual.setVisible(true);
                             }
                             break;
                     }
