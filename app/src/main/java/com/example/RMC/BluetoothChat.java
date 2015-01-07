@@ -29,6 +29,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -41,6 +42,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.NumberPicker;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -94,7 +96,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
 
-    TextView tv, defaultTV, deviceDetails;
+    TextView tv, defaultTV, deviceDetails, leftGestureTv, rightGestureTv;
     LinearLayout programSelectionLL, toggleButtonLL, latestDeviceInfo;
     RelativeLayout ppt,mediaPlay;
     Spinner programSelectionSpinner;
@@ -105,6 +107,12 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
     String pairedDeviceAddress,hasOnCreateOptionsMenuBeenCreated,isDeviceConnected = "",hasSensorBeenUsedRecently="", isMotionControlSelected="";
     Menu settingsMenu;
     MenuItem connectBT, disconnectBT, settingOption,userManual;
+    private SeekBar leftSeek=null;
+    private SeekBar rightSeek = null;
+    int leftValue;
+    int rightValue;
+    boolean wasLeftGestureValueChanged = false;
+    boolean wasRightGestureValueChanged = false;
 
     String[] web = {
             "Microsoft PowerPoint",
@@ -235,6 +243,9 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
             public void onClick(View view) {
                 String message ="ppt min";
                 sendMessage(message);
+                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                // Vibrate for 400 milliseconds
+                v.vibrate(200);
             }
         });
 
@@ -243,6 +254,9 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
             public void onClick(View view) {
                 String message ="ppt max";
                 sendMessage(message);
+                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                // Vibrate for 400 milliseconds
+                v.vibrate(200);
             }
         });
 
@@ -251,6 +265,9 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
             public void onClick(View view) {
                 String message ="ppt pre";
                 sendMessage(message);
+                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                // Vibrate for 400 milliseconds
+                v.vibrate(200);
             }
         });
 
@@ -259,6 +276,9 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
             public void onClick(View view) {
                 String message ="ppt nex";
                 sendMessage(message);
+                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                // Vibrate for 400 milliseconds
+                v.vibrate(200);
             }
         });
 
@@ -276,6 +296,9 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
             public void onClick(View view) {
                 String message ="Media Player Minimize";
                 sendMessage(message);
+                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                // Vibrate for 400 milliseconds
+                v.vibrate(200);
             }
         });
 
@@ -284,6 +307,9 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
             public void onClick(View view) {
                 String message ="Media Player Maximize";
                 sendMessage(message);
+                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                // Vibrate for 400 milliseconds
+                v.vibrate(200);
             }
         });
 
@@ -292,6 +318,9 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
             public void onClick(View view) {
                 String message ="Media Player Mute";
                 sendMessage(message);
+                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                // Vibrate for 400 milliseconds
+                v.vibrate(200);
             }
         });
 
@@ -300,6 +329,9 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
             public void onClick(View view) {
                 String message ="Media Player Unmute";
                 sendMessage(message);
+                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                // Vibrate for 400 milliseconds
+                v.vibrate(200);
             }
         });
 
@@ -308,6 +340,9 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
             public void onClick(View view) {
                 String message ="Media Player Play";
                 sendMessage(message);
+                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                // Vibrate for 400 milliseconds
+                v.vibrate(200);
             }
         });
         mediaPlayStop.setOnClickListener(new OnClickListener() {
@@ -315,6 +350,9 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
             public void onClick(View view) {
                 String message ="Media Player Stop";
                 sendMessage(message);
+                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                // Vibrate for 400 milliseconds
+                v.vibrate(200);
             }
         });
 
@@ -323,6 +361,9 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
             public void onClick(View view) {
                 String message ="Media Player Pause";
                 sendMessage(message);
+                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                // Vibrate for 400 milliseconds
+                v.vibrate(200);
             }
         });
 
@@ -348,102 +389,6 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                 }
             }
         });
-
-
-
-    	/*button1 = (ImageButton) findViewById(R.id.imageButton1);
-		button2 = (ImageButton) findViewById(R.id.imageButton2);
-		button3 = (ImageButton) findViewById(R.id.imageButton3);
-		button4 = (ImageButton) findViewById(R.id.imageButton4);*/
-
-        //ImageButton 1
-
-        //button1.setOnTouchListener(new OnTouchListener() {
-
-        //public boolean onTouch(View v, MotionEvent event){
-        //	switch(event.getAction()) {
-        //	case MotionEvent.ACTION_DOWN:
-        //		String message ="A";
-        //		sendMessage(message);
-        //	break;
-
-        //		case MotionEvent.ACTION_UP:
-
-        //	break;
-        //}
-        //	return false;
-
-					/*button1.setOnClickListener(new OnClickListener() {
-
-
-
-						public void onClick(View arg0) {
-
-							String message ="A";
-							sendMessage(message);
-
-							Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-							// Vibrate for 400 milliseconds
-							v.vibrate(400);
-
-			}
-			});
-
-
-				//ImageButton 2
-
-				button2.setOnClickListener(new OnClickListener() {
-
-
-
-					public void onClick(View arg0) {
-
-						String message ="D";
-						sendMessage(message);
-
-						Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-						// Vibrate for 400 milliseconds
-						v.vibrate(400);
-
-
-
-					}
-				});
-
-
-				//ImageButton 3
-
-				button3.setOnClickListener(new OnClickListener() {
-
-					public void onClick(View arg0) {
-
-					String message = "W";
-					sendMessage(message);
-
-					Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-					// Vibrate for 400 milliseconds
-					v.vibrate(400);
-
-					}
-				});
-
-
-				//ImageButton 4
-
-				button4.setOnClickListener(new OnClickListener() {
-
-					public void onClick(View arg0) {
-
-					String message = "S";
-					sendMessage(message);
-
-					Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-					// Vibrate for 400 milliseconds
-					v.vibrate(400);
-
-					}
-				});
-				*/
     }
 
 
@@ -731,6 +676,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                 }
                 return true;
             case R.id.disconnectDevice:
+                sendMessage("DC");
                 mChatService.stop();
                 connectBT.setVisible(true);
                 disconnectBT.setVisible(false);
@@ -901,12 +847,66 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
     {
 
         final Dialog d = new Dialog(BluetoothChat.this);
-        d.setTitle("Motion Control Calibration");
+        //d.setTitle("Motion Control Calibration");
+        d.requestWindowFeature(Window.FEATURE_NO_TITLE);
         d.setContentView(R.layout.settings);
         Button saveSettings = (Button) d.findViewById(R.id.saveSettings);
         Button cancelSettings = (Button) d.findViewById(R.id.cancelSettings);
         SharedPreferences prefs = getSharedPreferences("RMCSP", MODE_PRIVATE);
-        final NumberPicker leftNP = (NumberPicker) d.findViewById(R.id.leftNumberPicker);
+        leftSeek = (SeekBar) d.findViewById(R.id.leftSeek);
+        rightSeek = (SeekBar) d.findViewById(R.id.rightSeek);
+        leftGestureTv = (TextView) d.findViewById(R.id.leftGestureTV);
+        rightGestureTv = (TextView) d.findViewById(R.id.rightGestureTV);
+
+
+        leftGestureTv.setText("Left Gesture Sensitivity: " + String.valueOf(prefs.getInt("leftGestureValue", 9)));
+        int leftSeekValue = prefs.getInt("leftGestureValue", 9)-1;
+        leftSeek.setProgress(leftSeekValue);
+        rightGestureTv.setText("Right Gesture Sensitivity: " + String.valueOf(prefs.getInt("rightGestureValue", 9)));
+        int rightSeekValue = prefs.getInt("rightGestureValue", 9)-1;
+        rightSeek.setProgress(rightSeekValue);
+
+        leftSeek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
+
+                leftValue = progress + 1;
+                leftGestureTv.setText("Left Gesture Sensitivity: " + String.valueOf(leftValue));
+                wasLeftGestureValueChanged = true;
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        rightSeek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
+                rightValue = progress + 1;
+                rightGestureTv.setText("Right Gesture Sensitivity: " + String.valueOf(rightValue));
+                wasRightGestureValueChanged = true;
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        /*final NumberPicker leftNP = (NumberPicker) d.findViewById(R.id.leftNumberPicker);
         leftNP.setMaxValue(10);
         leftNP.setMinValue(1);
         leftNP.setValue(prefs.getInt("leftGestureValue", 9));
@@ -917,15 +917,21 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
         rightNP.setMinValue(1);
         rightNP.setValue(prefs.getInt("rightGestureValue", 9));
         rightNP.setWrapSelectorWheel(false);
-        rightNP.setOnValueChangedListener(this);
+        rightNP.setOnValueChangedListener(this);*/
 
         saveSettings.setOnClickListener(new OnClickListener()
         {
             @Override
             public void onClick(View v) {
                 // dismiss the dialog
-                editor.putInt("leftGestureValue", leftNP.getValue());
-                editor.putInt("rightGestureValue", rightNP.getValue());
+                if(wasLeftGestureValueChanged==true) {
+                    editor.putInt("leftGestureValue", leftValue);
+                }
+                if(wasRightGestureValueChanged==true) {
+                    editor.putInt("rightGestureValue", rightValue);
+                }
+                wasRightGestureValueChanged = false;
+                wasLeftGestureValueChanged = false;
                 editor.commit();
                 d.dismiss();
             }
@@ -935,6 +941,8 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
             @Override
             public void onClick(View v) {
                 // dismiss the dialog
+                wasRightGestureValueChanged = false;
+                wasLeftGestureValueChanged = false;
                 d.dismiss();
             }
         });
@@ -955,6 +963,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         //finish();0
+                        sendMessage("DC");
                         mChatService.stop();
                         mBluetoothAdapter.disable();
                         System.exit(0);

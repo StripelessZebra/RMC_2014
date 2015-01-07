@@ -57,7 +57,7 @@
         <activity
             android:name=".UserManual"
             android:label="@string/app_name" >
-        </activity>
+        </activity>TeTexsssssssss
     </application>
 
 </manifest>
