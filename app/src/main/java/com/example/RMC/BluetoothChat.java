@@ -27,6 +27,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -410,15 +411,37 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
 
         if(isMotionControlSelected=="YES") {
             if (isDeviceConnected == "YES" && hasSensorBeenUsedRecently == "") {
+
+                Button btn = (Button) findViewById(R.id.hold);
+                btn.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View view, MotionEvent motionEvent) {
+                        switch(motionEvent.getAction()) {
+                            case MotionEvent.ACTION_DOWN:
+                                // Do something
+                                sendMessage("HL");
+                                return true;
+                            case MotionEvent.ACTION_UP:
+                                // No longer down
+                                sendMessage("DHL");
+                                return true;
+                        }
+                        return false;
+                    }
+                });
+
+
                 if (Math.round(x) >= leftGestureValueSensitivity) {
                         Log.i("ACCELEROMETER X: ", "LEFT " + String.valueOf(x));
-                        String message = "ppt pre";
+                        //String message = "ppt pre";
+                        String message = "left";
                         sendMessage(message);
-                        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                        /*Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                         // Vibrate for 400 milliseconds
-                        v.vibrate(200);
+                        v.vibrate(200);*/
                         hasSensorBeenUsedRecently = "YES";
-                        new CountDownTimer(1000, 1000) {
+                    hasSensorBeenUsedRecently = "";
+                        /*new CountDownTimer(1000, 1000) {
 
                             public void onTick(long millisUntilFinished) {
                             }
@@ -426,16 +449,16 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                             public void onFinish() {
                                 hasSensorBeenUsedRecently = "";
                             }
-                        }.start();
+                        }.start();*/
                 } else if (Math.round(x) <= Integer.parseInt(rightGestureValueSensitivityConverted)) {
                         Log.i("ACCELEROMETER X: ", "RIGHT" + String.valueOf(x));
-                        String message = "ppt nex";
+                        //String message = "ppt nex";
+                        String message = "right";
                         sendMessage(message);
-                        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                        // Vibrate for 400 milliseconds
-                        v.vibrate(200);
+
                         hasSensorBeenUsedRecently = "YES";
-                        new CountDownTimer(1000, 1000) {
+                    hasSensorBeenUsedRecently = "";
+                        /*new CountDownTimer(1000, 1000) {
 
                             public void onTick(long millisUntilFinished) {
                             }
@@ -443,15 +466,25 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                             public void onFinish() {
                                 hasSensorBeenUsedRecently = "";
                             }
-                        }.start();
+                        }.start();*/
                 } else if (Math.round(x) < 2 || Math.round(x) > -2) {
 
                 }
 
-                if (Math.round(y) > 2) {
+                if (Math.round(y) >= 3) {
                     //Log.i("ACCELEROMETER Y: ", "UP?" + String.valueOf(y));
-                } else if (Math.round(y) < -2) {
+                    String message = "up";
+                    sendMessage(message);
+
+                    hasSensorBeenUsedRecently = "YES";
+                    hasSensorBeenUsedRecently = "";
+                } else if (Math.round(y) <= -3) {
                     //Log.i("ACCELEROMETER Y: ", "DOWN?" +String.valueOf(y));
+                    String message = "down";
+                    sendMessage(message);
+
+                    hasSensorBeenUsedRecently = "YES";
+                    hasSensorBeenUsedRecently = "";
                 } else if (Math.round(y) < 2 || Math.round(y) > -2) {
                 }
             }

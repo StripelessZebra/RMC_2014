@@ -116,6 +116,12 @@
             android:layout_height="wrap_content"
             android:textOn="ON"
             android:textOff="OFF" />
+
+        <Button
+            android:id="@+id/hold"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="HOLD"/>
     </LinearLayout>
 
     <RelativeLayout
