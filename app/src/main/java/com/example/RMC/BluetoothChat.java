@@ -97,21 +97,29 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
 
-    TextView tv, defaultTV, deviceDetails, leftGestureTv, rightGestureTv;
-    LinearLayout programSelectionLL, toggleButtonLL, latestDeviceInfo;
+    TextView tv, defaultTV, deviceDetails, upGestureTv, downGestureTv, leftGestureTv, rightGestureTv;
+    Button eraseAnnotationsBtn, leftMouseBtn, rightMouseBtn, mediaPlayIncrease , mediaPlayDecrease;
+    LinearLayout programSelectionLL, toggleButtonLL, latestDeviceInfo, highlightToggleLL, mouseButtonLL;
     RelativeLayout ppt,mediaPlay;
     Spinner programSelectionSpinner;
     CustomProgramList spinnerAdapter;
     Switch toggle;
-    ImageView pptMinimize, pptMaximize, pptLeft, pptRight, mediaPlayMinimize, mediaPlayMaximize, mediaPlayMute, mediaPlayUnmute, mediaPlayPlay, mediaPlayStop, mediaPlayPause;
+    ToggleButton highlightToggle;
+    ImageView pptMinimize, pptMaximize, pptLeft, pptRight, mediaPlayMinimize, mediaPlayMaximize, mediaPlayMute, mediaPlayUnmute, mediaPlayPlay, mediaPlayStop, mediaPlayPause ,mediaPlayNext, mediaPlayPrev;
     SharedPreferences.Editor editor;
-    String pairedDeviceAddress,hasOnCreateOptionsMenuBeenCreated,isDeviceConnected = "",hasSensorBeenUsedRecently="", isMotionControlSelected="";
+    String pairedDeviceAddress,hasOnCreateOptionsMenuBeenCreated,isDeviceConnected = "", isMotionControlSelected="";
     Menu settingsMenu;
     MenuItem connectBT, disconnectBT, settingOption,userManual;
+    private SeekBar upSeek = null;
+    private SeekBar downSeek = null;
     private SeekBar leftSeek=null;
     private SeekBar rightSeek = null;
+    int upValue;
+    int downValue;
     int leftValue;
     int rightValue;
+    boolean wasUpGestureValueChanged = false;
+    boolean wasDownGestureValueChanged = false;
     boolean wasLeftGestureValueChanged = false;
     boolean wasRightGestureValueChanged = false;
 
@@ -199,6 +207,18 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
         toggleButtonLL = (LinearLayout) findViewById(R.id.toggleButtonLL);
         toggleButtonLL.setVisibility(View.GONE);
 
+        highlightToggleLL = (LinearLayout) findViewById(R.id.highlightToggleButtonLL);
+        highlightToggleLL.setVisibility(View.GONE);
+
+        mouseButtonLL = (LinearLayout)findViewById(R.id.mouseButtonLL);
+        mouseButtonLL.setVisibility(View.GONE);
+
+        eraseAnnotationsBtn = (Button) findViewById(R.id.eraseAnnotationBtn);
+        eraseAnnotationsBtn.setVisibility(View.GONE);
+
+        leftMouseBtn = (Button) findViewById(R.id.leftMouseBtn);
+        rightMouseBtn = (Button) findViewById(R.id.rightMouseBtn);
+
         programSelectionLL = (LinearLayout) findViewById(R.id.programSelectionLL);
         programSelectionLL.setVisibility(View.GONE);
 
@@ -221,9 +241,27 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                     if (programSelectionSpinner.getSelectedItem().toString().equals("Microsoft PowerPoint")) {
                         ppt.setVisibility(View.VISIBLE);
                         mediaPlay.setVisibility(View.GONE);
+                        toggleButtonLL.setVisibility(View.VISIBLE);
                     } else if (programSelectionSpinner.getSelectedItem().toString().equals("Windows Media Player")) {
                         ppt.setVisibility(View.GONE);
                         mediaPlay.setVisibility(View.VISIBLE);
+                        toggleButtonLL.setVisibility(View.GONE);
+                        highlightToggleLL.setVisibility(View.GONE);
+                        mouseButtonLL.setVisibility(View.GONE);
+                    }
+                }
+                else if(isMotionControlSelected=="YES"){
+                    if (programSelectionSpinner.getSelectedItem().toString().equals("Microsoft PowerPoint")) {
+                        ppt.setVisibility(View.VISIBLE);
+                        mediaPlay.setVisibility(View.GONE);
+                        toggleButtonLL.setVisibility(View.VISIBLE);
+                    } else if (programSelectionSpinner.getSelectedItem().toString().equals("Windows Media Player")) {
+                        ppt.setVisibility(View.GONE);
+                        mediaPlay.setVisibility(View.VISIBLE);
+                        toggleButtonLL.setVisibility(View.GONE);
+                        toggle.setChecked(false);
+                        highlightToggleLL.setVisibility(View.GONE);
+                        mouseButtonLL.setVisibility(View.GONE);
                     }
                 }
             }
@@ -291,11 +329,15 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
         mediaPlayPlay = (ImageView) findViewById(R.id.mediaPlayPlay);
         mediaPlayStop = (ImageView) findViewById(R.id.mediaPlayStop);
         mediaPlayPause = (ImageView) findViewById(R.id.mediaPlayPause);
+        mediaPlayNext = (ImageView) findViewById(R.id.mediaPlayNext);
+        mediaPlayPrev = (ImageView) findViewById(R.id.mediaPlayPrev);
+        mediaPlayIncrease = (Button) findViewById(R.id.mediaPlayIncrease);
+        mediaPlayDecrease = (Button) findViewById(R.id.mediaPlayDecrease);
 
         mediaPlayMinimize.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                String message ="Media Player Minimize";
+                String message ="mp min";
                 sendMessage(message);
                 Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                 // Vibrate for 400 milliseconds
@@ -306,7 +348,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
         mediaPlayMaximize.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                String message ="Media Player Maximize";
+                String message ="mp max";
                 sendMessage(message);
                 Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                 // Vibrate for 400 milliseconds
@@ -317,7 +359,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
         mediaPlayMute.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                String message ="Media Player Mute";
+                String message ="mp mute";
                 sendMessage(message);
                 Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                 // Vibrate for 400 milliseconds
@@ -328,7 +370,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
         mediaPlayUnmute.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                String message ="Media Player Unmute";
+                String message ="mp unmt";
                 sendMessage(message);
                 Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                 // Vibrate for 400 milliseconds
@@ -339,17 +381,18 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
         mediaPlayPlay.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                String message ="Media Player Play";
+                String message ="mp play";
                 sendMessage(message);
                 Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                 // Vibrate for 400 milliseconds
                 v.vibrate(200);
             }
         });
+
         mediaPlayStop.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                String message ="Media Player Stop";
+                String message ="mp stop";
                 sendMessage(message);
                 Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                 // Vibrate for 400 milliseconds
@@ -360,7 +403,51 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
         mediaPlayPause.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                String message ="Media Player Pause";
+                String message ="mp paus";
+                sendMessage(message);
+                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                // Vibrate for 400 milliseconds
+                v.vibrate(200);
+            }
+        });
+
+        mediaPlayNext.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String message ="mp next";
+                sendMessage(message);
+                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                // Vibrate for 400 milliseconds
+                v.vibrate(200);
+            }
+        });
+
+        mediaPlayPrev.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String message ="mp prev";
+                sendMessage(message);
+                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                // Vibrate for 400 milliseconds
+                v.vibrate(200);
+            }
+        });
+
+        mediaPlayIncrease.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String message ="mp incr";
+                sendMessage(message);
+                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                // Vibrate for 400 milliseconds
+                v.vibrate(200);
+            }
+        });
+
+        mediaPlayDecrease.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String message ="mp decr";
                 sendMessage(message);
                 Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                 // Vibrate for 400 milliseconds
@@ -376,8 +463,17 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                     ppt.setVisibility(View.GONE);
                     mediaPlay.setVisibility(View.GONE);
                     isMotionControlSelected="YES";
+                    highlightToggleLL.setVisibility(View.VISIBLE);
+                    mouseButtonLL.setVisibility(View.VISIBLE);
+                    eraseAnnotationsBtn.setVisibility(View.VISIBLE);
+                    sendMessage("show cr");
                 } else {
                     // The toggle is disabled
+                    sendMessage("hide cr");
+                    highlightToggleLL.setVisibility(View.GONE);
+                    highlightToggle.setChecked(false);
+                    mouseButtonLL.setVisibility(View.GONE);
+                    eraseAnnotationsBtn.setVisibility(View.GONE);
                     if (programSelectionSpinner.getSelectedItem().toString().equals("Microsoft PowerPoint")){
                         ppt.setVisibility(View.VISIBLE);
                         mediaPlay.setVisibility(View.GONE);
@@ -385,9 +481,42 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                     else if(programSelectionSpinner.getSelectedItem().toString().equals("Windows Media Player")) {
                         ppt.setVisibility(View.GONE);
                         mediaPlay.setVisibility(View.VISIBLE);
+                        toggleButtonLL.setVisibility(View.GONE);
+                        highlightToggleLL.setVisibility(View.GONE);
+                        mouseButtonLL.setVisibility(View.GONE);
                     }
                     isMotionControlSelected="";
                 }
+            }
+        });
+
+        eraseAnnotationsBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sendMessage("eraseAn");
+                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                // Vibrate for 400 milliseconds
+                v.vibrate(200);
+            }
+        });
+
+        leftMouseBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sendMessage("leftck");
+                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                // Vibrate for 400 milliseconds
+                v.vibrate(200);
+            }
+        });
+
+        rightMouseBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sendMessage("rightck");
+                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                // Vibrate for 400 milliseconds
+                v.vibrate(200);
             }
         });
     }
@@ -405,90 +534,53 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
         float z = event.values[2];
 
         SharedPreferences prefs = getSharedPreferences("RMCSP", MODE_PRIVATE);
+        int upGestureValueSensitivity = prefs.getInt("upGestureValue", 9);
+        int downGestureValueSensitivity = prefs.getInt("downGestureValue", 9);
+        String downGestureValueSensitivityConverted = "-"+downGestureValueSensitivity;
         int leftGestureValueSensitivity = prefs.getInt("leftGestureValue", 9);
         int rightGestureValueSensitivity = prefs.getInt("rightGestureValue", 9);
         String rightGestureValueSensitivityConverted = "-"+rightGestureValueSensitivity;
 
         if(isMotionControlSelected=="YES") {
-            if (isDeviceConnected == "YES" && hasSensorBeenUsedRecently == "") {
-
-                Button btn = (Button) findViewById(R.id.hold);
-                btn.setOnTouchListener(new View.OnTouchListener() {
-                    @Override
-                    public boolean onTouch(View view, MotionEvent motionEvent) {
-                        switch(motionEvent.getAction()) {
-                            case MotionEvent.ACTION_DOWN:
-                                // Do something
-                                sendMessage("HL");
-                                return true;
-                            case MotionEvent.ACTION_UP:
-                                // No longer down
-                                sendMessage("DHL");
-                                return true;
+                highlightToggle = (ToggleButton) findViewById(R.id.highlightToggleButton);
+                highlightToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if (isChecked) {
+                            // The toggle is enabled
+                            String message = "HL on";
+                            sendMessage(message);
+                        } else {
+                            String message = "HL off";
+                            sendMessage(message);
                         }
-                        return false;
                     }
                 });
-
 
                 if (Math.round(x) >= leftGestureValueSensitivity) {
                         Log.i("ACCELEROMETER X: ", "LEFT " + String.valueOf(x));
                         //String message = "ppt pre";
-                        String message = "left";
+                        String message = "aLeft";
                         sendMessage(message);
-                        /*Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                        // Vibrate for 400 milliseconds
-                        v.vibrate(200);*/
-                        hasSensorBeenUsedRecently = "YES";
-                    hasSensorBeenUsedRecently = "";
-                        /*new CountDownTimer(1000, 1000) {
-
-                            public void onTick(long millisUntilFinished) {
-                            }
-
-                            public void onFinish() {
-                                hasSensorBeenUsedRecently = "";
-                            }
-                        }.start();*/
                 } else if (Math.round(x) <= Integer.parseInt(rightGestureValueSensitivityConverted)) {
                         Log.i("ACCELEROMETER X: ", "RIGHT" + String.valueOf(x));
                         //String message = "ppt nex";
-                        String message = "right";
+                        String message = "aRight";
                         sendMessage(message);
-
-                        hasSensorBeenUsedRecently = "YES";
-                    hasSensorBeenUsedRecently = "";
-                        /*new CountDownTimer(1000, 1000) {
-
-                            public void onTick(long millisUntilFinished) {
-                            }
-
-                            public void onFinish() {
-                                hasSensorBeenUsedRecently = "";
-                            }
-                        }.start();*/
                 } else if (Math.round(x) < 2 || Math.round(x) > -2) {
 
                 }
 
-                if (Math.round(y) >= 3) {
-                    //Log.i("ACCELEROMETER Y: ", "UP?" + String.valueOf(y));
-                    String message = "up";
+                if (Math.round(y) >= upGestureValueSensitivity) {
+                    Log.i("ACCELEROMETER Y: ", "UP " + String.valueOf(y));
+                    String message = "aUp";
                     sendMessage(message);
-
-                    hasSensorBeenUsedRecently = "YES";
-                    hasSensorBeenUsedRecently = "";
-                } else if (Math.round(y) <= -3) {
-                    //Log.i("ACCELEROMETER Y: ", "DOWN?" +String.valueOf(y));
-                    String message = "down";
+                } else if (Math.round(y) <= Integer.parseInt(downGestureValueSensitivityConverted)) {
+                    Log.i("ACCELEROMETER Y: ", "DOWN " +String.valueOf(y));
+                    String message = "aDown";
                     sendMessage(message);
-
-                    hasSensorBeenUsedRecently = "YES";
-                    hasSensorBeenUsedRecently = "";
                 } else if (Math.round(y) < 2 || Math.round(y) > -2) {
                 }
             }
-        }
     }
 
     private AdapterView.OnItemClickListener programClickListener = new AdapterView.OnItemClickListener() {
@@ -760,7 +852,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                                 Log.i(TAG, mConnectedDeviceName + " " + pairedDeviceAddress);
                                 editor.commit();
                             }
-
+                            toggle.setChecked(false);
                             isDeviceConnected = "YES";
                             programSelectionLL.setVisibility(View.VISIBLE);
                             toggleButtonLL.setVisibility(View.VISIBLE);
@@ -779,12 +871,16 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                                 } else if (programSelectionSpinner.getSelectedItem().toString().equals("Windows Media Player")) {
                                     ppt.setVisibility(View.GONE);
                                     mediaPlay.setVisibility(View.VISIBLE);
+                                    toggleButtonLL.setVisibility(View.GONE);
+                                    highlightToggleLL.setVisibility(View.GONE);
+                                    mouseButtonLL.setVisibility(View.GONE);
                                 }
                             }
                             break;
                         case BluetoothChatService.STATE_CONNECTING:
                             tv.setText("");
                             tv.setBackground(getResources().getDrawable(R.drawable.connecting));
+                            defaultTV.setText(R.string.title_connecting);
                             if(hasOnCreateOptionsMenuBeenCreated =="YES") {
                                 connectBT.setVisible(false);
                                 disconnectBT.setVisible(false);
@@ -803,6 +899,9 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                             ppt.setVisibility(View.GONE);
                             mediaPlay.setVisibility(View.GONE);
                             toggleButtonLL.setVisibility(View.GONE);
+                            highlightToggleLL.setVisibility(View.GONE);
+                            mouseButtonLL.setVisibility(View.GONE);
+                            eraseAnnotationsBtn.setVisibility(View.GONE);
                             isDeviceConnected = "";
 
                             if(hasOnCreateOptionsMenuBeenCreated =="YES" && isDeviceConnected =="") {
@@ -819,7 +918,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                     // construct a string from the buffer
                     String writeMessage = new String(writeBuf);
                     //mConversationArrayAdapter.add("Me:  " + writeMessage);
-                    Toast.makeText(getApplicationContext(),writeMessage, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(),writeMessage, Toast.LENGTH_SHORT).show();
                     break;
                 case MESSAGE_READ:
                     byte[] readBuf = (byte[]) msg.obj;
@@ -886,18 +985,70 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
         Button saveSettings = (Button) d.findViewById(R.id.saveSettings);
         Button cancelSettings = (Button) d.findViewById(R.id.cancelSettings);
         SharedPreferences prefs = getSharedPreferences("RMCSP", MODE_PRIVATE);
+        upSeek = (SeekBar) d.findViewById(R.id.upSeek);
+        downSeek = (SeekBar) d.findViewById(R.id.downSeek);
         leftSeek = (SeekBar) d.findViewById(R.id.leftSeek);
         rightSeek = (SeekBar) d.findViewById(R.id.rightSeek);
+        upGestureTv = (TextView) d.findViewById(R.id.upGestureTV);
+        downGestureTv = (TextView) d.findViewById(R.id.downGestureTV);
         leftGestureTv = (TextView) d.findViewById(R.id.leftGestureTV);
         rightGestureTv = (TextView) d.findViewById(R.id.rightGestureTV);
 
-
+        upGestureTv.setText("Upward Gesture Sensitivity: " + String.valueOf(prefs.getInt("upGestureValue", 9)));
+        int upSeekValue = prefs.getInt("upGestureValue", 9)-1;
+        upSeek.setProgress(upSeekValue);
+        downGestureTv.setText("Downward Gesture Sensitivity: " + String.valueOf(prefs.getInt("downGestureValue", 9)));
+        int downSeekValue = prefs.getInt("downGestureValue", 9)-1;
+        downSeek.setProgress(downSeekValue);
         leftGestureTv.setText("Left Gesture Sensitivity: " + String.valueOf(prefs.getInt("leftGestureValue", 9)));
         int leftSeekValue = prefs.getInt("leftGestureValue", 9)-1;
         leftSeek.setProgress(leftSeekValue);
         rightGestureTv.setText("Right Gesture Sensitivity: " + String.valueOf(prefs.getInt("rightGestureValue", 9)));
         int rightSeekValue = prefs.getInt("rightGestureValue", 9)-1;
         rightSeek.setProgress(rightSeekValue);
+
+        upSeek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
+
+                upValue = progress + 1;
+                upGestureTv.setText("Upward Gesture Sensitivity: " + String.valueOf(upValue));
+                wasUpGestureValueChanged = true;
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        downSeek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
+
+                downValue = progress + 1;
+                downGestureTv.setText("Downward Gesture Sensitivity: " + String.valueOf(downValue));
+                wasDownGestureValueChanged = true;
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
 
         leftSeek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
@@ -957,12 +1108,20 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
             @Override
             public void onClick(View v) {
                 // dismiss the dialog
+                if(wasUpGestureValueChanged==true){
+                    editor.putInt("upGestureValue", upValue);
+                }
+                if(wasDownGestureValueChanged==true){
+                    editor.putInt("downGestureValue", downValue);
+                }
                 if(wasLeftGestureValueChanged==true) {
                     editor.putInt("leftGestureValue", leftValue);
                 }
                 if(wasRightGestureValueChanged==true) {
                     editor.putInt("rightGestureValue", rightValue);
                 }
+                wasUpGestureValueChanged = false;
+                wasDownGestureValueChanged = false;
                 wasRightGestureValueChanged = false;
                 wasLeftGestureValueChanged = false;
                 editor.commit();
@@ -974,6 +1133,8 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
             @Override
             public void onClick(View v) {
                 // dismiss the dialog
+                wasUpGestureValueChanged = false;
+                wasDownGestureValueChanged = false;
                 wasRightGestureValueChanged = false;
                 wasLeftGestureValueChanged = false;
                 d.dismiss();

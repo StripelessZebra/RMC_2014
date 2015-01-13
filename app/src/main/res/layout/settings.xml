@@ -15,8 +15,53 @@
         android:text="*Note: The lower the value, the more sensitive."/>
 
     <TextView
-        android:id="@+id/leftGestureTV"
+        android:id="@+id/upGestureTV"
         android:layout_below="@+id/settingsInfoTV"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:textStyle="bold|italic"
+        android:textSize="16dp"
+        android:text="Upward Gesture Sensitivity:"/>
+
+    <SeekBar
+        android:id="@+id/upSeek"
+        android:layout_below="@+id/upGestureTV"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:max="8"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp" />
+
+    <TextView
+        android:id="@+id/downGestureTV"
+        android:layout_below="@+id/upSeek"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:textStyle="bold|italic"
+        android:textSize="16dp"
+        android:text="Downward Gesture Sensitivity:"/>
+
+    <SeekBar
+        android:id="@+id/downSeek"
+        android:layout_below="@+id/downGestureTV"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:max="8"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp" />
+
+
+    <TextView
+        android:id="@+id/leftGestureTV"
+        android:layout_below="@+id/downSeek"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
