@@ -109,7 +109,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="18dp"
-            android:text="Motion Control: "/>
+            android:text="Cursor Control: "/>
         <Switch
             android:id="@+id/toggleButton"
             android:layout_width="wrap_content"
@@ -130,10 +130,10 @@
 
         <Button
             android:id="@+id/eraseAnnotationBtn"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
+            android:layout_height="114px"
+            android:layout_width="140px"
             android:layout_marginTop="2dp"
-            android:layout_marginRight="30dp"
+            android:layout_marginRight="20dp"
             android:layout_below="@id/highlightToggleButtonLL"
             android:background="@drawable/erase2" />
 
@@ -144,8 +144,6 @@
             android:textOn="Highlighter On"
             android:textOff="Highlighter Off"
             android:checked="false" />
-
-
     </LinearLayout>
 
     <LinearLayout
@@ -153,7 +151,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/highlightToggleButtonLL"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="60dp"
         android:gravity="center_vertical|center_horizontal"
         >
 
@@ -196,45 +194,71 @@
         android:gravity="center_vertical|center_horizontal"
         android:visibility="gone"
         >
+        <LinearLayout
+            android:id="@+id/pptMinMaxLL"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical|center_horizontal"
+            >
+            <ImageView
+                android:id="@+id/pptMinimize"
+                android:src="@drawable/ic_action_return_from_full_screen"
+                android:background="#000"
+                android:layout_width="60dp"
+                android:layout_height="60dp"/>
 
-        <ImageView
-            android:id="@+id/pptMinimize"
-            android:src="@drawable/ic_action_return_from_full_screen"
-            android:background="#23000000"
-            android:layout_width="60dp"
-            android:layout_height="60dp"/>
+            <ImageView
+                android:id="@+id/pptMaximize"
+                android:layout_marginLeft="60dp"
+                android:background="#000"
+                android:src="@drawable/ic_action_full_screen"
+                android:layout_width="60dp"
+                android:layout_height="60dp"/>
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/pptLeftRightLL"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/pptMinMaxLL"
+            android:layout_marginTop="20dp"
+            android:gravity="center_vertical|center_horizontal"
+            >
+            <ImageView
+                android:id="@+id/pptLeft"
+                android:layout_below="@+id/pptMinimize"
+                android:background="#000"
+                android:src="@drawable/ic_action_back"
+                android:layout_width="60dp"
+                android:layout_height="60dp"/>
 
-        <ImageView
-            android:id="@+id/pptMaximize"
-            android:layout_marginLeft="100dp"
-            android:layout_toRightOf="@+id/pptMinimize"
-            android:background="#23000000"
-            android:src="@drawable/ic_action_full_screen"
-            android:layout_width="60dp"
-            android:layout_height="60dp"/>
-
-
-        <ImageView
-            android:id="@+id/pptLeft"
-            android:layout_below="@+id/pptMinimize"
-            android:background="#23000000"
-            android:src="@drawable/ic_action_back"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginTop="50dp"
-            android:layout_marginBottom="50dp"/>
-
-        <ImageView
-            android:id="@+id/pptRight"
-            android:layout_marginLeft="100dp"
-            android:layout_toRightOf="@+id/pptLeft"
-            android:background="#23000000"
-            android:layout_below="@+id/pptMaximize"
-            android:src="@drawable/ic_action_forward"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginTop="50dp"
-            android:layout_marginBottom="50dp"/>
+            <ImageView
+                android:id="@+id/pptRight"
+                android:layout_marginLeft="60dp"
+                android:background="#000"
+                android:layout_below="@+id/pptMaximize"
+                android:src="@drawable/ic_action_forward"
+                android:layout_width="60dp"
+                android:layout_height="60dp"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/pptLeftRightLL"
+            android:layout_marginTop="20dp"
+            android:gravity="center_vertical|center_horizontal"
+            >
+            <Button
+                android:id="@+id/jumpToSlideBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:textColor="#b2b2b2"
+                android:textStyle="bold"
+                android:text="Jump To Slide"
+                android:textSize="18dp"
+                android:background="#000"
+                />
+        </LinearLayout>
     </RelativeLayout>
 
     <RelativeLayout
@@ -244,7 +268,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:gravity="center_vertical|center_horizontal"
-
+        android:visibility="gone"
         >
         <LinearLayout
             android:id="@+id/mpScreenLL"
@@ -254,7 +278,7 @@
             <ImageView
                 android:id="@+id/mediaPlayMinimize"
                 android:src="@drawable/ic_action_return_from_full_screen"
-                android:background="#23000000"
+                android:background="#000"
                 android:layout_marginRight="25dp"
                 android:layout_width="60dp"
                 android:layout_height="60dp"/>
@@ -262,7 +286,7 @@
             <ImageView
                 android:id="@+id/mediaPlayMaximize"
                 android:layout_toRightOf="@+id/mediaPlayMinimize"
-                android:background="#23000000"
+                android:background="#000"
                 android:src="@drawable/ic_action_full_screen"
                 android:layout_marginLeft="25dp"
                 android:layout_width="60dp"
@@ -273,17 +297,17 @@
             android:layout_below="@+id/mpScreenLL"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="25dp"
             android:gravity="center_horizontal|center_vertical">
 
             <Button
                 android:id="@+id/mediaPlayDecrease"
                 android:layout_below="@+id/mpScreenLL"
                 android:layout_marginRight="5dp"
-                android:background="#23000000"
+                android:background="#000"
                 android:text="-"
                 android:textSize="40dp"
-                android:textColor="#89000000"
+                android:textColor="#b2b2b2"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 />
@@ -293,7 +317,7 @@
                 android:layout_below="@+id/mpScreenLL"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
-                android:background="#23000000"
+                android:background="#000"
                 android:src="@drawable/ic_action_volume_muted"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
@@ -305,7 +329,7 @@
                 android:layout_toRightOf="@+id/mediaPlayMute"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
-                android:background="#23000000"
+                android:background="#000"
                 android:src="@drawable/ic_action_volume_on"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
@@ -314,10 +338,10 @@
                 android:id="@+id/mediaPlayIncrease"
                 android:layout_below="@+id/mpScreenLL"
                 android:layout_marginLeft="5dp"
-                android:background="#23000000"
+                android:background="#000"
                 android:text="+"
                 android:textSize="40dp"
-                android:textColor="#89000000"
+                android:textColor="#b2b2b2"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 />
@@ -327,11 +351,11 @@
             android:layout_below="@+id/mpVolLL"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="25dp"
             android:gravity="center_horizontal|center_vertical">
             <ImageView
                 android:id="@+id/mediaPlayStop"
-                android:background="#23000000"
+                android:background="#000"
                 android:layout_below="@+id/mpVolLL"
                 android:src="@drawable/ic_action_stop"
                 android:layout_width="60dp"
@@ -343,7 +367,7 @@
                 android:id="@+id/mediaPlayNext"
                 android:layout_below="@+id/mpVolLL"
                 android:layout_toRightOf="@+id/mediaPlayStop"
-                android:background="#23000000"
+                android:background="#000"
                 android:src="@drawable/ic_action_previous"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
@@ -355,7 +379,7 @@
                 android:id="@+id/mediaPlayPlay"
                 android:layout_below="@+id/mpVolLL"
                 android:layout_toRightOf="@+id/mediaPlayNext"
-                android:background="#23000000"
+                android:background="#000"
                 android:src="@drawable/ic_action_play"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
@@ -367,7 +391,7 @@
                 android:id="@+id/mediaPlayPrev"
                 android:layout_below="@+id/mpVolLL"
                 android:layout_toRightOf="@+id/mediaPlayPlay"
-                android:background="#23000000"
+                android:background="#000"
                 android:src="@drawable/ic_action_next"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
@@ -379,7 +403,7 @@
                 android:id="@+id/mediaPlayPause"
                 android:layout_below="@+id/mpVolLL"
                 android:layout_toRightOf="@+id/mediaPlayPrev"
-                android:background="#23000000"
+                android:background="#000"
                 android:src="@drawable/ic_action_pause"
                 android:layout_width="60dp"
                 android:layout_height="60dp"

@@ -112,6 +112,41 @@
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp" />
 
+    <TextView
+        android:id="@+id/cursorSpeedInfoTV"
+        android:layout_below="@+id/rightSeek"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:textSize="16dp"
+        android:textStyle="bold|italic"
+        android:gravity="center"
+        android:text="**Note: The higher the value, the faster."/>
+
+    <TextView
+        android:id="@+id/cursorSpeedTV"
+        android:layout_below="@+id/cursorSpeedInfoTV"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:textStyle="bold|italic"
+        android:textSize="16dp"
+        android:text="Speed Of Cursor:"/>
+
+    <SeekBar
+        android:id="@+id/cursorSeek"
+        android:layout_below="@+id/cursorSpeedTV"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:max="8"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp" />
+
     <!--<NumberPicker
         android:id="@+id/rightNumberPicker"
         android:layout_below="@+id/rightGestureTV"
@@ -126,7 +161,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_below="@+id/rightSeek"
+        android:layout_below="@+id/cursorSeek"
         android:gravity="center">
 
         <Button

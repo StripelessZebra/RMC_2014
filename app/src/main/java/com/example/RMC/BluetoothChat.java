@@ -22,6 +22,8 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -97,8 +99,8 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
 
-    TextView tv, defaultTV, deviceDetails, upGestureTv, downGestureTv, leftGestureTv, rightGestureTv;
-    Button eraseAnnotationsBtn, leftMouseBtn, rightMouseBtn, mediaPlayIncrease , mediaPlayDecrease;
+    TextView tv, defaultTV, deviceDetails, upGestureTv, downGestureTv, leftGestureTv, rightGestureTv, cursorSpeedTv;
+    Button eraseAnnotationsBtn, leftMouseBtn, rightMouseBtn, mediaPlayIncrease , mediaPlayDecrease, jumpToSlideBtn;
     LinearLayout programSelectionLL, toggleButtonLL, latestDeviceInfo, highlightToggleLL, mouseButtonLL;
     RelativeLayout ppt,mediaPlay;
     Spinner programSelectionSpinner;
@@ -114,14 +116,17 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
     private SeekBar downSeek = null;
     private SeekBar leftSeek=null;
     private SeekBar rightSeek = null;
+    private SeekBar cursorSeek = null;
     int upValue;
     int downValue;
     int leftValue;
     int rightValue;
+    int cursorValue;
     boolean wasUpGestureValueChanged = false;
     boolean wasDownGestureValueChanged = false;
     boolean wasLeftGestureValueChanged = false;
     boolean wasRightGestureValueChanged = false;
+    boolean wasCursorSpeedValueChanged = false;
 
     String[] web = {
             "Microsoft PowerPoint",
@@ -276,6 +281,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
         pptMaximize = (ImageView) findViewById(R.id.pptMaximize);
         pptLeft = (ImageView) findViewById(R.id.pptLeft);
         pptRight = (ImageView) findViewById(R.id.pptRight);
+        jumpToSlideBtn = (Button) findViewById(R.id.jumpToSlideBtn);
 
         pptMinimize.setOnClickListener(new OnClickListener() {
             @Override
@@ -318,6 +324,13 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                 Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                 // Vibrate for 400 milliseconds
                 v.vibrate(200);
+            }
+        });
+
+        jumpToSlideBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                jumpToSlideDialog();
             }
         });
 
@@ -540,9 +553,11 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
         int leftGestureValueSensitivity = prefs.getInt("leftGestureValue", 9);
         int rightGestureValueSensitivity = prefs.getInt("rightGestureValue", 9);
         String rightGestureValueSensitivityConverted = "-"+rightGestureValueSensitivity;
+        String cursorSeekValue = "0" + String.valueOf(prefs.getInt("cursorSeekValue", 2));
 
         if(isMotionControlSelected=="YES") {
                 highlightToggle = (ToggleButton) findViewById(R.id.highlightToggleButton);
+
                 highlightToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                         if (isChecked) {
@@ -559,12 +574,12 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                 if (Math.round(x) >= leftGestureValueSensitivity) {
                         Log.i("ACCELEROMETER X: ", "LEFT " + String.valueOf(x));
                         //String message = "ppt pre";
-                        String message = "aLeft";
+                        String message = "aLt  " + cursorSeekValue;
                         sendMessage(message);
                 } else if (Math.round(x) <= Integer.parseInt(rightGestureValueSensitivityConverted)) {
                         Log.i("ACCELEROMETER X: ", "RIGHT" + String.valueOf(x));
                         //String message = "ppt nex";
-                        String message = "aRight";
+                        String message = "aRt  " + cursorSeekValue;
                         sendMessage(message);
                 } else if (Math.round(x) < 2 || Math.round(x) > -2) {
 
@@ -572,11 +587,11 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
 
                 if (Math.round(y) >= upGestureValueSensitivity) {
                     Log.i("ACCELEROMETER Y: ", "UP " + String.valueOf(y));
-                    String message = "aUp";
+                    String message = "aUp  " + cursorSeekValue;
                     sendMessage(message);
                 } else if (Math.round(y) <= Integer.parseInt(downGestureValueSensitivityConverted)) {
                     Log.i("ACCELEROMETER Y: ", "DOWN " +String.valueOf(y));
-                    String message = "aDown";
+                    String message = "aDn  " + cursorSeekValue;
                     sendMessage(message);
                 } else if (Math.round(y) < 2 || Math.round(y) > -2) {
                 }
@@ -636,6 +651,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
     @Override
     public synchronized void onPause() {
         super.onPause();
+        sendMessage("DC");
         mChatService.stop();
         if(D) Log.e(TAG, "- ON PAUSE -");
     }
@@ -651,6 +667,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
     public void onDestroy() {
         super.onDestroy();
         // Stop the Bluetooth chat services
+        sendMessage("DC");
         if (mChatService != null) mChatService.stop();
         mBluetoothAdapter.disable();
         if(D) Log.e(TAG, "--- ON DESTROY ---");
@@ -989,10 +1006,12 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
         downSeek = (SeekBar) d.findViewById(R.id.downSeek);
         leftSeek = (SeekBar) d.findViewById(R.id.leftSeek);
         rightSeek = (SeekBar) d.findViewById(R.id.rightSeek);
+        cursorSeek = (SeekBar) d.findViewById(R.id.cursorSeek);
         upGestureTv = (TextView) d.findViewById(R.id.upGestureTV);
         downGestureTv = (TextView) d.findViewById(R.id.downGestureTV);
         leftGestureTv = (TextView) d.findViewById(R.id.leftGestureTV);
         rightGestureTv = (TextView) d.findViewById(R.id.rightGestureTV);
+        cursorSpeedTv = (TextView) d.findViewById(R.id.cursorSpeedTV);
 
         upGestureTv.setText("Upward Gesture Sensitivity: " + String.valueOf(prefs.getInt("upGestureValue", 9)));
         int upSeekValue = prefs.getInt("upGestureValue", 9)-1;
@@ -1006,6 +1025,9 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
         rightGestureTv.setText("Right Gesture Sensitivity: " + String.valueOf(prefs.getInt("rightGestureValue", 9)));
         int rightSeekValue = prefs.getInt("rightGestureValue", 9)-1;
         rightSeek.setProgress(rightSeekValue);
+        cursorSpeedTv.setText("Speed Of Cursor: " + String.valueOf(prefs.getInt("cursorSeekValue", 2)));
+        int cursorSpeedValue = prefs.getInt("cursorSeekValue", 2)-1;
+        cursorSeek.setProgress(cursorSpeedValue);
 
         upSeek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
@@ -1090,6 +1112,26 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
 
             }
         });
+
+        cursorSeek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
+                cursorValue = progress + 1;
+                cursorSpeedTv.setText("Speed Of Cursor: " + String.valueOf(cursorValue));
+                wasCursorSpeedValueChanged = true;
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
         /*final NumberPicker leftNP = (NumberPicker) d.findViewById(R.id.leftNumberPicker);
         leftNP.setMaxValue(10);
         leftNP.setMinValue(1);
@@ -1120,10 +1162,14 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                 if(wasRightGestureValueChanged==true) {
                     editor.putInt("rightGestureValue", rightValue);
                 }
+                if(wasCursorSpeedValueChanged==true){
+                    editor.putInt("cursorSeekValue", cursorValue);
+                }
                 wasUpGestureValueChanged = false;
                 wasDownGestureValueChanged = false;
                 wasRightGestureValueChanged = false;
                 wasLeftGestureValueChanged = false;
+                wasCursorSpeedValueChanged = false;
                 editor.commit();
                 d.dismiss();
             }
@@ -1137,12 +1183,79 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                 wasDownGestureValueChanged = false;
                 wasRightGestureValueChanged = false;
                 wasLeftGestureValueChanged = false;
+                wasCursorSpeedValueChanged = false;
                 d.dismiss();
             }
         });
         d.show();
 
 
+    }
+
+    public void jumpToSlideDialog()
+    {
+
+        final Dialog d = new Dialog(BluetoothChat.this);
+        //d.setTitle("Motion Control Calibration");
+        d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        d.setContentView(R.layout.jump_to_slide);
+        final EditText jumpToSlideInput = (EditText) d.findViewById(R.id.jumpToSlideInput);
+        Button goToSlide = (Button) d.findViewById(R.id.goToSlide);
+        Button cancelJump = (Button) d.findViewById(R.id.cancelJump);
+
+        jumpToSlideInput.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(jumpToSlideInput.getText().toString().equals("0")){
+                    //jumpToSlideInput.setText("");
+                }
+            }
+        });
+
+        goToSlide.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // dismiss the dialog
+                if(jumpToSlideInput.getText().toString().equals("")||jumpToSlideInput.getText().toString().equals("0")||jumpToSlideInput.getText().toString().equals("00")){
+                    jumpToSlideInput.setText("");
+                }
+                else {
+                    String slideNum = jumpToSlideInput.getText().toString();
+                    if(slideNum.length()<2){
+                        slideNum = "0"+slideNum;
+                        //Toast.makeText(getApplicationContext(),slideNum,Toast.LENGTH_SHORT).show();
+                        sendMessage("goto " + slideNum);
+                    }
+                    else if(slideNum.length()==2){
+                        sendMessage("goto " + slideNum);
+                        //Toast.makeText(getApplicationContext(),slideNum,Toast.LENGTH_SHORT).show();
+                    }
+                    d.dismiss();
+                }
+            }
+        });
+        cancelJump.setOnClickListener(new OnClickListener()
+        {
+            @Override
+            public void onClick(View v) {
+                // dismiss the dialog
+                d.dismiss();
+            }
+        });
+        d.show();
     }
 
     @Override
