@@ -106,7 +106,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
     Spinner programSelectionSpinner;
     CustomProgramList spinnerAdapter;
     Switch toggle;
-    ToggleButton highlightToggle;
+    ToggleButton highlightToggle, laserPointerToggle;
     ImageView pptMinimize, pptMaximize, pptLeft, pptRight, mediaPlayMinimize, mediaPlayMaximize, mediaPlayMute, mediaPlayUnmute, mediaPlayPlay, mediaPlayStop, mediaPlayPause ,mediaPlayNext, mediaPlayPrev;
     SharedPreferences.Editor editor;
     String pairedDeviceAddress,hasOnCreateOptionsMenuBeenCreated,isDeviceConnected = "", isMotionControlSelected="";
@@ -485,6 +485,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                     sendMessage("hide cr");
                     highlightToggleLL.setVisibility(View.GONE);
                     highlightToggle.setChecked(false);
+                    laserPointerToggle.setChecked(false);
                     mouseButtonLL.setVisibility(View.GONE);
                     eraseAnnotationsBtn.setVisibility(View.GONE);
                     if (programSelectionSpinner.getSelectedItem().toString().equals("Microsoft PowerPoint")){
@@ -557,6 +558,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
 
         if(isMotionControlSelected=="YES") {
                 highlightToggle = (ToggleButton) findViewById(R.id.highlightToggleButton);
+                laserPointerToggle = (ToggleButton) findViewById(R.id.laserPointerToggleButton);
 
                 highlightToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -564,37 +566,87 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                             // The toggle is enabled
                             String message = "HL on";
                             sendMessage(message);
+                            laserPointerToggle.setChecked(false);
+                            laserPointerToggle.setVisibility(View.GONE);
+                            mouseButtonLL.setVisibility(View.GONE);
                         } else {
                             String message = "HL off";
                             sendMessage(message);
+                            laserPointerToggle.setVisibility(View.VISIBLE);
+                            mouseButtonLL.setVisibility(View.VISIBLE);
                         }
                     }
                 });
 
+                laserPointerToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if (isChecked) {
+                            // The toggle is enabled
+                            String message = "LP on";
+                            sendMessage(message);
+                            highlightToggle.setChecked(false);
+                            highlightToggle.setVisibility(View.GONE);
+                            eraseAnnotationsBtn.setVisibility(View.GONE);
+                            mouseButtonLL.setVisibility(View.GONE);
+                        } else {
+                            String message = "LP off";
+                            sendMessage(message);
+                            highlightToggle.setVisibility(View.VISIBLE);
+                            eraseAnnotationsBtn.setVisibility(View.VISIBLE);
+                            mouseButtonLL.setVisibility(View.VISIBLE);
+                        }
+                    }
+                });
+                //Left
                 if (Math.round(x) >= leftGestureValueSensitivity) {
                         Log.i("ACCELEROMETER X: ", "LEFT " + String.valueOf(x));
                         //String message = "ppt pre";
                         String message = "aLt  " + cursorSeekValue;
                         sendMessage(message);
-                } else if (Math.round(x) <= Integer.parseInt(rightGestureValueSensitivityConverted)) {
+                }
+                //Right
+                else if (Math.round(x) <= Integer.parseInt(rightGestureValueSensitivityConverted)) {
                         Log.i("ACCELEROMETER X: ", "RIGHT" + String.valueOf(x));
                         //String message = "ppt nex";
                         String message = "aRt  " + cursorSeekValue;
                         sendMessage(message);
-                } else if (Math.round(x) < 2 || Math.round(x) > -2) {
-
                 }
-
+                //Up
                 if (Math.round(y) >= upGestureValueSensitivity) {
                     Log.i("ACCELEROMETER Y: ", "UP " + String.valueOf(y));
                     String message = "aUp  " + cursorSeekValue;
                     sendMessage(message);
-                } else if (Math.round(y) <= Integer.parseInt(downGestureValueSensitivityConverted)) {
+                }
+                //Down
+                else if (Math.round(y) <= Integer.parseInt(downGestureValueSensitivityConverted)) {
                     Log.i("ACCELEROMETER Y: ", "DOWN " +String.valueOf(y));
                     String message = "aDn  " + cursorSeekValue;
                     sendMessage(message);
-                } else if (Math.round(y) < 2 || Math.round(y) > -2) {
                 }
+                /*//Left and Up
+                if ((Math.round(x) >= leftGestureValueSensitivity) && (Math.round(y) >= upGestureValueSensitivity)) {
+                    Log.i("ACCELEROMETER X: ", "LEFTUP " + String.valueOf(x));
+                    String message = "aLU  " + cursorSeekValue;
+                    sendMessage(message);
+                }
+                //Right and Up
+                if (Math.round(x) <= Integer.parseInt(rightGestureValueSensitivityConverted) && (Math.round(y) >= upGestureValueSensitivity)) {
+                    Log.i("ACCELEROMETER X: ", "RIGHTUP " + String.valueOf(x));
+                    String message = "aRU  " + cursorSeekValue;
+                    sendMessage(message);
+                }
+                //Left and Down
+                if ((Math.round(x) <= Integer.parseInt(rightGestureValueSensitivityConverted)) && (Math.round(y) <= Integer.parseInt(downGestureValueSensitivityConverted))) {
+                    Log.i("ACCELEROMETER X: ", "LEFTDOWN " + String.valueOf(x));
+                    String message = "aLD  " + cursorSeekValue;
+                    sendMessage(message);
+                }
+                //Right and Down
+                if ((Math.round(x) <= Integer.parseInt(rightGestureValueSensitivityConverted)) && (Math.round(y) <= Integer.parseInt(downGestureValueSensitivityConverted))) {
+                    Log.i("ACCELEROMETER X: ", "RIGHTDOWN " + String.valueOf(x));
+                    String message = "aRD  " + cursorSeekValue;
+                    sendMessage(message);
+                }*/
             }
     }
 

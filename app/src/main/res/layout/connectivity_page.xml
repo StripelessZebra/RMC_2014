@@ -143,6 +143,15 @@
             android:layout_height="wrap_content"
             android:textOn="Highlighter On"
             android:textOff="Highlighter Off"
+            android:layout_marginRight="20dp"
+            android:checked="false" />
+
+        <ToggleButton
+            android:id="@+id/laserPointerToggleButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textOn="Pointer On"
+            android:textOff="Pointer Off"
             android:checked="false" />
     </LinearLayout>
 
