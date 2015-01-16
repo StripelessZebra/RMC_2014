@@ -144,7 +144,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
 
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_FASTEST);
 
         // Register for broadcasts on BluetoothAdapter state change
         this.registerReceiver(mReceiver, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
@@ -703,7 +703,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
     @Override
     public synchronized void onPause() {
         super.onPause();
-        sendMessage("DC");
+        sendMessage("Disconn");
         mChatService.stop();
         if(D) Log.e(TAG, "- ON PAUSE -");
     }
@@ -719,7 +719,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
     public void onDestroy() {
         super.onDestroy();
         // Stop the Bluetooth chat services
-        sendMessage("DC");
+        sendMessage("Disconn");
         if (mChatService != null) mChatService.stop();
         mBluetoothAdapter.disable();
         if(D) Log.e(TAG, "--- ON DESTROY ---");
@@ -742,7 +742,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
     private void sendMessage(String message) {
         // Check that we're actually connected before trying anything
         if (mChatService.getState() != BluetoothChatService.STATE_CONNECTED) {
-            Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT).show();
             return;
         }
         // Check that there's actually something to send
@@ -870,7 +870,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                 }
                 return true;
             case R.id.disconnectDevice:
-                sendMessage("DC");
+                sendMessage("Disconn");
                 mChatService.stop();
                 connectBT.setVisible(true);
                 disconnectBT.setVisible(false);
@@ -1322,7 +1322,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         //finish();0
-                        sendMessage("DC");
+                        sendMessage("Disconn");
                         mChatService.stop();
                         mBluetoothAdapter.disable();
                         System.exit(0);
