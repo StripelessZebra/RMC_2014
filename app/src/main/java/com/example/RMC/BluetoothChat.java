@@ -335,19 +335,19 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
         });
 
 
-        mediaPlayMinimize = (ImageView) findViewById(R.id.mediaPlayMinimize);
+        //mediaPlayMinimize = (ImageView) findViewById(R.id.mediaPlayMinimize);
         mediaPlayMaximize = (ImageView) findViewById(R.id.mediaPlayMaximize);
         mediaPlayMute = (ImageView) findViewById(R.id.mediaPlayMute);
-        mediaPlayUnmute = (ImageView) findViewById(R.id.mediaPlayUnmute);
+        //mediaPlayUnmute = (ImageView) findViewById(R.id.mediaPlayUnmute);
         mediaPlayPlay = (ImageView) findViewById(R.id.mediaPlayPlay);
         mediaPlayStop = (ImageView) findViewById(R.id.mediaPlayStop);
-        mediaPlayPause = (ImageView) findViewById(R.id.mediaPlayPause);
+        //mediaPlayPause = (ImageView) findViewById(R.id.mediaPlayPause);
         mediaPlayNext = (ImageView) findViewById(R.id.mediaPlayNext);
         mediaPlayPrev = (ImageView) findViewById(R.id.mediaPlayPrev);
         mediaPlayIncrease = (Button) findViewById(R.id.mediaPlayIncrease);
         mediaPlayDecrease = (Button) findViewById(R.id.mediaPlayDecrease);
 
-        mediaPlayMinimize.setOnClickListener(new OnClickListener() {
+        /*mediaPlayMinimize.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 String message ="mp min";
@@ -356,7 +356,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                 // Vibrate for 400 milliseconds
                 v.vibrate(200);
             }
-        });
+        });*/
 
         mediaPlayMaximize.setOnClickListener(new OnClickListener() {
             @Override
@@ -380,7 +380,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
             }
         });
 
-        mediaPlayUnmute.setOnClickListener(new OnClickListener() {
+        /*mediaPlayUnmute.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 String message ="mp unmt";
@@ -389,7 +389,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                 // Vibrate for 400 milliseconds
                 v.vibrate(200);
             }
-        });
+        });*/
 
         mediaPlayPlay.setOnClickListener(new OnClickListener() {
             @Override
@@ -413,7 +413,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
             }
         });
 
-        mediaPlayPause.setOnClickListener(new OnClickListener() {
+        /*mediaPlayPause.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 String message ="mp paus";
@@ -422,7 +422,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                 // Vibrate for 400 milliseconds
                 v.vibrate(200);
             }
-        });
+        });*/
 
         mediaPlayNext.setOnClickListener(new OnClickListener() {
             @Override
