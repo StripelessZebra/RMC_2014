@@ -11,13 +11,13 @@ import android.widget.TextView;
 
 public class CustomProgramList extends ArrayAdapter<String> {
     private final Activity context;
-    private final String[] web;
+    private final String[] program;
     private final Integer[] imageId;
     public CustomProgramList(Activity context,
-                             String[] web, Integer[] imageId) {
-        super(context, R.layout.program_name, web);
+                             String[] program ,Integer[] imageId) {
+        super(context, R.layout.program_name, program);
         this.context = context;
-        this.web = web;
+        this.program = program;
         this.imageId = imageId;
     }
     @Override
@@ -26,7 +26,7 @@ public class CustomProgramList extends ArrayAdapter<String> {
         View rowView= inflater.inflate(R.layout.program_name, null, true);
         TextView txtTitle = (TextView) rowView.findViewById(R.id.txt);
         ImageView imageView = (ImageView) rowView.findViewById(R.id.img);
-        txtTitle.setText(web[position]);
+        txtTitle.setText(program[position]);
         imageView.setImageResource(imageId[position]);
         return rowView;
     }

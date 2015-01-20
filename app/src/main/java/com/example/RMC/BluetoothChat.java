@@ -103,8 +103,8 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
     Button eraseAnnotationsBtn, leftMouseBtn, rightMouseBtn, mediaPlayIncrease , mediaPlayDecrease, jumpToSlideBtn;
     LinearLayout programSelectionLL, toggleButtonLL, latestDeviceInfo, highlightToggleLL, mouseButtonLL;
     RelativeLayout ppt,mediaPlay;
-    Spinner programSelectionSpinner;
-    CustomProgramList spinnerAdapter;
+    Spinner programSelectionSpinner, pptToolsSpinner;
+    CustomProgramList spinnerAdapter, pptSpinnerAdapter;
     Switch toggle;
     ToggleButton highlightToggle, laserPointerToggle;
     ImageView pptMinimize, pptMaximize, pptLeft, pptRight, mediaPlayMinimize, mediaPlayMaximize, mediaPlayMute, mediaPlayUnmute, mediaPlayPlay, mediaPlayStop, mediaPlayPause ,mediaPlayNext, mediaPlayPrev;
@@ -127,8 +127,10 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
     boolean wasLeftGestureValueChanged = false;
     boolean wasRightGestureValueChanged = false;
     boolean wasCursorSpeedValueChanged = false;
+    boolean isLaserPointerOn = false;
+    boolean isHighlighterOn = false;
 
-    String[] web = {
+    String[] program = {
             "Microsoft PowerPoint",
             "Windows Media Player"
     } ;
@@ -136,6 +138,9 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
             R.drawable.powerpoint,
             R.drawable.media_player
     };
+
+    String[] pptTools = {"Cursor", "Highlighter", "Laser Pointer"};
+    Integer[] pptToolsImage = {R.drawable.cursor, R.drawable.highlighter, R.drawable.laser};
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -233,8 +238,8 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
         mediaPlay = (RelativeLayout) findViewById(R.id.mediaPlay);
         mediaPlay.setVisibility(View.GONE);
 
-        programSelectionSpinner= (Spinner) findViewById(R.id.programSelectionSpinner);
-        spinnerAdapter = new CustomProgramList(this, web, imageId);
+        programSelectionSpinner = (Spinner) findViewById(R.id.programSelectionSpinner);
+        spinnerAdapter = new CustomProgramList(this, program, imageId);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         programSelectionSpinner.setAdapter(spinnerAdapter);
 
@@ -268,6 +273,69 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                         highlightToggleLL.setVisibility(View.GONE);
                         mouseButtonLL.setVisibility(View.GONE);
                     }
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        pptToolsSpinner = (Spinner) findViewById(R.id.pptToolsSpinner);
+        pptSpinnerAdapter = new CustomProgramList(this, pptTools, pptToolsImage);
+        pptSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        pptToolsSpinner.setAdapter(pptSpinnerAdapter);
+
+        pptToolsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (pptToolsSpinner.getSelectedItem().toString().equals("Cursor")) {
+                    if(isLaserPointerOn == true) {
+                        isLaserPointerOn = false;
+                        sendMessage("LP off");
+                    }
+                    if(isHighlighterOn == true) {
+                        isHighlighterOn = false;
+                        sendMessage("HL off");
+                    }
+                    mouseButtonLL.setVisibility(View.VISIBLE);
+                    eraseAnnotationsBtn.setVisibility(View.GONE);
+                }
+                else if (pptToolsSpinner.getSelectedItem().toString().equals("Highlighter")) {
+                    if(isLaserPointerOn == true) {
+                        isLaserPointerOn = false;
+                        sendMessage("LP off");
+                    }
+                    new CountDownTimer(100, 100) {
+
+                        public void onTick(long millisUntilFinished) {
+                        }
+
+                        public void onFinish() {
+                            isHighlighterOn = true;
+                            sendMessage("HL on");
+                            mouseButtonLL.setVisibility(View.GONE);
+                            eraseAnnotationsBtn.setVisibility(View.VISIBLE);
+                        }
+                    }.start();
+                }
+                else if (pptToolsSpinner.getSelectedItem().toString().equals("Laser Pointer")) {
+                    if(isHighlighterOn == true) {
+                        isHighlighterOn = false;
+                        sendMessage("HL off");
+                    }
+                    new CountDownTimer(100, 100) {
+                        public void onTick(long millisUntilFinished) {
+                        }
+
+                        public void onFinish() {
+                            isLaserPointerOn = true;
+                            sendMessage("LP on");
+                            mouseButtonLL.setVisibility(View.GONE);
+                            eraseAnnotationsBtn.setVisibility(View.GONE);
+                        }
+                    }.start();
                 }
             }
 
@@ -478,14 +546,15 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                     isMotionControlSelected="YES";
                     highlightToggleLL.setVisibility(View.VISIBLE);
                     mouseButtonLL.setVisibility(View.VISIBLE);
-                    eraseAnnotationsBtn.setVisibility(View.VISIBLE);
+                    //eraseAnnotationsBtn.setVisibility(View.VISIBLE);
                     sendMessage("show cr");
+                    pptToolsSpinner.setSelection(0);
                 } else {
                     // The toggle is disabled
                     sendMessage("hide cr");
                     highlightToggleLL.setVisibility(View.GONE);
-                    highlightToggle.setChecked(false);
-                    laserPointerToggle.setChecked(false);
+                    //highlightToggle.setChecked(false);
+                    //laserPointerToggle.setChecked(false);
                     mouseButtonLL.setVisibility(View.GONE);
                     eraseAnnotationsBtn.setVisibility(View.GONE);
                     if (programSelectionSpinner.getSelectedItem().toString().equals("Microsoft PowerPoint")){
@@ -557,7 +626,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
         String cursorSeekValue = "0" + String.valueOf(prefs.getInt("cursorSeekValue", 2));
 
         if(isMotionControlSelected=="YES") {
-                highlightToggle = (ToggleButton) findViewById(R.id.highlightToggleButton);
+                /*highlightToggle = (ToggleButton) findViewById(R.id.highlightToggleButton);
                 laserPointerToggle = (ToggleButton) findViewById(R.id.laserPointerToggleButton);
 
                 highlightToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -596,7 +665,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                             mouseButtonLL.setVisibility(View.VISIBLE);
                         }
                     }
-                });
+                });*/
                 //Left
                 if (Math.round(x) >= leftGestureValueSensitivity) {
                         Log.i("ACCELEROMETER X: ", "LEFT " + String.valueOf(x));
