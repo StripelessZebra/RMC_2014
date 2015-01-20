@@ -105,11 +105,16 @@
         android:layout_marginTop="5dp"
         android:gravity="center_vertical|center_horizontal">
 
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/mouse"/>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="18dp"
-            android:text="Cursor Control: "/>
+            android:text="Mouse: "/>
         <Switch
             android:id="@+id/toggleButton"
             android:layout_width="wrap_content"
