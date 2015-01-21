@@ -20,6 +20,9 @@ public class UserManual extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        //edit row.xml and group.xml to change the styling of user manual
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.user_manual);
 
@@ -45,7 +48,6 @@ public class UserManual extends Activity {
         parentItems.add("Connect A Device");
         parentItems.add("Connection Status");
         parentItems.add("Program Control");
-        //parentItems.add("Something");
     }
 
     public void setChildData() {
@@ -62,23 +64,16 @@ public class UserManual extends Activity {
         child.add(getString(R.string.connectedIcon));
         child.add(getString(R.string.connectingIcon));
         child.add(getString(R.string.disconnectedIcon));
-        child.add(getString(R.string.disconnectBtn));
+        //child.add(getString(R.string.disconnectBtn));
         childItems.add(child);
 
         //Program Control
         child = new ArrayList<String>();
         child.add(getString(R.string.programSelection));
         child.add(getString(R.string.programSelection2));
+        child.add(getString(R.string.programSelection3));
+        child.add(getString(R.string.programSelection4));
         childItems.add(child);
-
-/*
-        //
-        child = new ArrayList<String>();
-        child.add("EJB3");
-        child.add("GWT");
-        child.add("Hibernate");
-        child.add("JSP");
-        childItems.add(child);*/
     }
 
 

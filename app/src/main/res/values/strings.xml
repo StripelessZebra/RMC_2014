@@ -23,7 +23,7 @@
     <!-- BluetoothChat -->
     <string name="not_connected">You are not connected to a device</string>
     <string name="bt_not_enabled_leaving">Bluetooth was not enabled.</string>
-    <string name="title_connecting">Connecting...</string>
+    <string name="title_connecting">Attempting To Connect...</string>
     <string name="title_connected_to">Connected to <xliff:g id="device_name">%1$s</xliff:g></string>
     <string name="title_not_connected">Not connected</string>
 
@@ -49,11 +49,13 @@
         to your desired device.</string>
 
     <string name="connectedIcon">Green Icon -> Successfully Connected</string>
-    <string name="connectingIcon">Orange Icon -> Attempting to Connect</string>
-    <string name="disconnectedIcon">Red Icon -> Unsuccessful Connection</string>
-    <string name="disconnectBtn">&lt;u&gt;Disconnect&lt;/u&gt; option removes the connection with the paired device.</string>
+    <string name="connectingIcon">Orange Icon -> Attempting To Connect</string>
+    <string name="disconnectedIcon">Red Icon -> Not Connected</string>
+
 
     <string name="programSelection">There are currently 2 supported programs (Microsoft PowerPoint, Windows Media Player).
         It is only available when the device is successfully connected.</string>
-    <string name="programSelection2">Once a program is selected, you are able to control it through buttons or through motion control. If the motion control switch is ON, you are able to control it via gestures.</string>
+    <string name="programSelection2">Once a program is selected, you are able to control it through buttons or motion control.</string>
+    <string name="programSelection3">Current controls for PowerPoint: Minimize, Maximize, Previous Slide, Next Slide, Toggle Blank Screen, Jump To Slide, Control of Mouse through gesture (Left Click, Right Click, Highlighter, Laser Pointer).</string>
+    <string name="programSelection4">Current controls for Media Player: Minimize, Maximize, Toggle Mute, Volume(-/+), Previous, Next, Stop, Play/Pause.</string>
 </resources>

@@ -11,10 +11,10 @@
         android:icon="@drawable/help"
         android:showAsAction="always|withText"/>
 
-    <item android:id="@+id/calibrationSettings"
+    <!--<item android:id="@+id/calibrationSettings"
         android:title="Settings"
         android:icon="@drawable/ic_action_settings"
-        android:showAsAction="always|withText"/>
+        android:showAsAction="always|withText"/>-->
 
     <item android:id="@+id/secure_connect_scan"
         android:title="Connect Device"

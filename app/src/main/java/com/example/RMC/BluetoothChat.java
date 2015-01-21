@@ -100,7 +100,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
     private Sensor mAccelerometer;
 
     TextView tv, defaultTV, deviceDetails, upGestureTv, downGestureTv, leftGestureTv, rightGestureTv, cursorSpeedTv;
-    Button eraseAnnotationsBtn, leftMouseBtn, rightMouseBtn, mediaPlayIncrease , mediaPlayDecrease, jumpToSlideBtn;
+    Button eraseAnnotationsBtn, leftMouseBtn, rightMouseBtn, mediaPlayIncrease , mediaPlayDecrease, jumpToSlideBtn,blankScreenBtn;
     LinearLayout programSelectionLL, toggleButtonLL, latestDeviceInfo, highlightToggleLL, mouseButtonLL;
     RelativeLayout ppt,mediaPlay;
     Spinner programSelectionSpinner, pptToolsSpinner;
@@ -349,6 +349,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
         pptMaximize = (ImageView) findViewById(R.id.pptMaximize);
         pptLeft = (ImageView) findViewById(R.id.pptLeft);
         pptRight = (ImageView) findViewById(R.id.pptRight);
+        blankScreenBtn = (Button) findViewById(R.id.blankScreenBtn);
         jumpToSlideBtn = (Button) findViewById(R.id.jumpToSlideBtn);
 
         pptMinimize.setOnClickListener(new OnClickListener() {
@@ -357,7 +358,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                 String message ="ppt min";
                 sendMessage(message);
                 Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                // Vibrate for 400 milliseconds
+                // Vibrate for 200 milliseconds
                 v.vibrate(200);
             }
         });
@@ -368,7 +369,6 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                 String message ="ppt max";
                 sendMessage(message);
                 Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                // Vibrate for 400 milliseconds
                 v.vibrate(200);
             }
         });
@@ -379,7 +379,6 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                 String message ="ppt pre";
                 sendMessage(message);
                 Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                // Vibrate for 400 milliseconds
                 v.vibrate(200);
             }
         });
@@ -390,7 +389,16 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                 String message ="ppt nex";
                 sendMessage(message);
                 Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                // Vibrate for 400 milliseconds
+                v.vibrate(200);
+            }
+        });
+
+        blankScreenBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String message ="blanksc";
+                sendMessage(message);
+                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                 v.vibrate(200);
             }
         });
@@ -421,7 +429,6 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                 String message ="mp min";
                 sendMessage(message);
                 Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                // Vibrate for 400 milliseconds
                 v.vibrate(200);
             }
         });*/
@@ -432,7 +439,6 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                 String message ="mp max";
                 sendMessage(message);
                 Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                // Vibrate for 400 milliseconds
                 v.vibrate(200);
             }
         });
@@ -443,7 +449,6 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                 String message ="mp mute";
                 sendMessage(message);
                 Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                // Vibrate for 400 milliseconds
                 v.vibrate(200);
             }
         });
@@ -454,7 +459,6 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                 String message ="mp unmt";
                 sendMessage(message);
                 Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                // Vibrate for 400 milliseconds
                 v.vibrate(200);
             }
         });*/
@@ -465,7 +469,6 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                 String message ="mp play";
                 sendMessage(message);
                 Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                // Vibrate for 400 milliseconds
                 v.vibrate(200);
             }
         });
@@ -476,7 +479,6 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                 String message ="mp stop";
                 sendMessage(message);
                 Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                // Vibrate for 400 milliseconds
                 v.vibrate(200);
             }
         });
@@ -487,7 +489,6 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                 String message ="mp paus";
                 sendMessage(message);
                 Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                // Vibrate for 400 milliseconds
                 v.vibrate(200);
             }
         });*/
@@ -498,7 +499,6 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                 String message ="mp next";
                 sendMessage(message);
                 Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                // Vibrate for 400 milliseconds
                 v.vibrate(200);
             }
         });
@@ -509,7 +509,6 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                 String message ="mp prev";
                 sendMessage(message);
                 Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                // Vibrate for 400 milliseconds
                 v.vibrate(200);
             }
         });
@@ -520,7 +519,6 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                 String message ="mp incr";
                 sendMessage(message);
                 Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                // Vibrate for 400 milliseconds
                 v.vibrate(200);
             }
         });
@@ -531,7 +529,6 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                 String message ="mp decr";
                 sendMessage(message);
                 Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                // Vibrate for 400 milliseconds
                 v.vibrate(200);
             }
         });
@@ -578,7 +575,6 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
             public void onClick(View view) {
                 sendMessage("eraseAn");
                 Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                // Vibrate for 400 milliseconds
                 v.vibrate(200);
             }
         });
@@ -588,7 +584,6 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
             public void onClick(View view) {
                 sendMessage("leftck");
                 Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                // Vibrate for 400 milliseconds
                 v.vibrate(200);
             }
         });
@@ -598,7 +593,6 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
             public void onClick(View view) {
                 sendMessage("rightck");
                 Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                // Vibrate for 400 milliseconds
                 v.vibrate(200);
             }
         });
@@ -617,13 +611,13 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
         float z = event.values[2];
 
         SharedPreferences prefs = getSharedPreferences("RMCSP", MODE_PRIVATE);
-        int upGestureValueSensitivity = prefs.getInt("upGestureValue", 9);
-        int downGestureValueSensitivity = prefs.getInt("downGestureValue", 9);
+        int upGestureValueSensitivity = prefs.getInt("upGestureValue", 2);
+        int downGestureValueSensitivity = prefs.getInt("downGestureValue", 2);
         String downGestureValueSensitivityConverted = "-"+downGestureValueSensitivity;
-        int leftGestureValueSensitivity = prefs.getInt("leftGestureValue", 9);
-        int rightGestureValueSensitivity = prefs.getInt("rightGestureValue", 9);
+        int leftGestureValueSensitivity = prefs.getInt("leftGestureValue", 2);
+        int rightGestureValueSensitivity = prefs.getInt("rightGestureValue", 2);
         String rightGestureValueSensitivityConverted = "-"+rightGestureValueSensitivity;
-        String cursorSeekValue = "0" + String.valueOf(prefs.getInt("cursorSeekValue", 2));
+        String cursorSeekValue = "0" + String.valueOf(prefs.getInt("cursorSeekValue", 3));
 
         if(isMotionControlSelected=="YES") {
                 /*highlightToggle = (ToggleButton) findViewById(R.id.highlightToggleButton);
@@ -668,28 +662,61 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                 });*/
                 //Left
                 if (Math.round(x) >= leftGestureValueSensitivity) {
-                        Log.i("ACCELEROMETER X: ", "LEFT " + String.valueOf(x));
-                        //String message = "ppt pre";
-                        String message = "aLt  " + cursorSeekValue;
-                        sendMessage(message);
+                    //Log.i("ACCELEROMETER X: ", "LEFT " + String.valueOf(x));
+                    //String message = "ppt pre";
+                    String accValue = "";
+                    if(Math.round(x)<10){
+                        accValue = "0" + String.valueOf(Math.round(x)-1);
+                    }
+                    else if(Math.round(x)>=10){
+                        accValue = String.valueOf(Math.round(x)-1);
+                    }
+
+                    //String message = "aLt  " + cursorSeekValue;
+                    String message = "aLt  " + accValue;
+                    sendMessage(message);
                 }
                 //Right
                 else if (Math.round(x) <= Integer.parseInt(rightGestureValueSensitivityConverted)) {
-                        Log.i("ACCELEROMETER X: ", "RIGHT" + String.valueOf(x));
-                        //String message = "ppt nex";
-                        String message = "aRt  " + cursorSeekValue;
-                        sendMessage(message);
+                    //Log.i("ACCELEROMETER X: ", "RIGHT" + String.valueOf(x));
+                    //String message = "ppt nex";
+                    String accValue = "";
+                    if(Math.round(Math.abs(x))<10){
+                        accValue = "0" + String.valueOf(Math.round(Math.abs(x))-1);
+                    }
+                    else if(Math.round(Math.abs(x))>=10){
+                        accValue = String.valueOf(Math.round(Math.abs(x))-1);
+                    }
+                    //String message = "aRt  " + cursorSeekValue;
+                    String message = "aRt  " + accValue;
+                    sendMessage(message);
                 }
-                //Up
+                //UP
                 if (Math.round(y) >= upGestureValueSensitivity) {
-                    Log.i("ACCELEROMETER Y: ", "UP " + String.valueOf(y));
-                    String message = "aUp  " + cursorSeekValue;
+                    //Log.i("ACCELEROMETER Y: ", "UP " + String.valueOf(y));
+                    String accValue = "";
+                    if(Math.round(y)<10){
+                        accValue = "0" + String.valueOf(Math.round(y)-1);
+                    }
+                    else if(Math.round(y)>=10){
+                        accValue = String.valueOf(Math.round(y)-1);
+                    }
+                    //String message = "aUp  " + cursorSeekValue;
+                    String message = "aUp  " + accValue;
                     sendMessage(message);
                 }
                 //Down
                 else if (Math.round(y) <= Integer.parseInt(downGestureValueSensitivityConverted)) {
-                    Log.i("ACCELEROMETER Y: ", "DOWN " +String.valueOf(y));
-                    String message = "aDn  " + cursorSeekValue;
+                    //Log.i("ACCELEROMETER Y: ", "DOWN " +String.valueOf(y));
+                    String accValue = "";
+                    if(Math.round(Math.abs(y))<10){
+                        accValue = "0" + String.valueOf(Math.round(Math.abs(y))-1);
+                    }
+                    else if(Math.round(Math.abs(y))>=10){
+                        accValue = String.valueOf(Math.round(Math.abs(y))-1);
+                    }
+                    //String message = "aDn  " + cursorSeekValue;
+                    String message = "aDn  " + accValue;
                     sendMessage(message);
                 }
                 /*//Left and Up
@@ -900,8 +927,8 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
         inflater.inflate(R.menu.connectivity_page, menu);
         connectBT = settingsMenu.findItem(R.id.secure_connect_scan);
         disconnectBT = settingsMenu.findItem(R.id.disconnectDevice);
-        settingOption = settingsMenu.findItem(R.id.calibrationSettings);
-        settingOption.setVisible(false);
+        //settingOption = settingsMenu.findItem(R.id.calibrationSettings);
+        //settingOption.setVisible(false);
         userManual = settingsMenu.findItem(R.id.userManual);
         userManual.setVisible(false);
         //Checking if user has previously connected to any device through this app
@@ -951,9 +978,9 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                 startActivity(userManual);
                 return true;
 
-            case R.id.calibrationSettings:
+            /*case R.id.calibrationSettings:
                 displayDialog();
-                return true;
+                return true;*/
         /*case R.id.insecure_connect_scan:
             // Launch the DeviceListActivity to see devices and do scan
             serverIntent = new Intent(this, DeviceListActivity.class);
@@ -980,7 +1007,6 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                             tv.setText("");
                             tv.setBackground(getResources().getDrawable(R.drawable.connected));
                             Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                            // Vibrate for 400 milliseconds
                             v.vibrate(400);
                             //Toast.makeText(getApplicationContext(),"Pairing successful", Toast.LENGTH_SHORT).show();
                             //mConversationArrayAdapter.clear();
@@ -999,7 +1025,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                             if(hasOnCreateOptionsMenuBeenCreated =="YES" && isDeviceConnected=="YES") {
                                 connectBT.setVisible(false);
                                 disconnectBT.setVisible(true);
-                                settingOption.setVisible(true);
+                                //settingOption.setVisible(true);
                                 userManual.setVisible(false);
                             }
                             if(isMotionControlSelected!="YES"){
@@ -1045,7 +1071,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                             if(hasOnCreateOptionsMenuBeenCreated =="YES" && isDeviceConnected =="") {
                                 connectBT.setVisible(true);
                                 disconnectBT.setVisible(false);
-                                settingOption.setVisible(false);
+                                //settingOption.setVisible(false);
                                 userManual.setVisible(true);
                             }
                             break;
@@ -1134,20 +1160,20 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
         rightGestureTv = (TextView) d.findViewById(R.id.rightGestureTV);
         cursorSpeedTv = (TextView) d.findViewById(R.id.cursorSpeedTV);
 
-        upGestureTv.setText("Upward Gesture Sensitivity: " + String.valueOf(prefs.getInt("upGestureValue", 9)));
-        int upSeekValue = prefs.getInt("upGestureValue", 9)-1;
+        upGestureTv.setText("Upward Gesture Sensitivity: " + String.valueOf(prefs.getInt("upGestureValue", 2)));
+        int upSeekValue = prefs.getInt("upGestureValue", 2)-1;
         upSeek.setProgress(upSeekValue);
-        downGestureTv.setText("Downward Gesture Sensitivity: " + String.valueOf(prefs.getInt("downGestureValue", 9)));
-        int downSeekValue = prefs.getInt("downGestureValue", 9)-1;
+        downGestureTv.setText("Downward Gesture Sensitivity: " + String.valueOf(prefs.getInt("downGestureValue", 2)));
+        int downSeekValue = prefs.getInt("downGestureValue", 2)-1;
         downSeek.setProgress(downSeekValue);
-        leftGestureTv.setText("Left Gesture Sensitivity: " + String.valueOf(prefs.getInt("leftGestureValue", 9)));
-        int leftSeekValue = prefs.getInt("leftGestureValue", 9)-1;
+        leftGestureTv.setText("Left Gesture Sensitivity: " + String.valueOf(prefs.getInt("leftGestureValue", 2)));
+        int leftSeekValue = prefs.getInt("leftGestureValue", 2)-1;
         leftSeek.setProgress(leftSeekValue);
-        rightGestureTv.setText("Right Gesture Sensitivity: " + String.valueOf(prefs.getInt("rightGestureValue", 9)));
-        int rightSeekValue = prefs.getInt("rightGestureValue", 9)-1;
+        rightGestureTv.setText("Right Gesture Sensitivity: " + String.valueOf(prefs.getInt("rightGestureValue", 2)));
+        int rightSeekValue = prefs.getInt("rightGestureValue", 2)-1;
         rightSeek.setProgress(rightSeekValue);
-        cursorSpeedTv.setText("Speed Of Cursor: " + String.valueOf(prefs.getInt("cursorSeekValue", 2)));
-        int cursorSpeedValue = prefs.getInt("cursorSeekValue", 2)-1;
+        cursorSpeedTv.setText("Speed Of Cursor: " + String.valueOf(prefs.getInt("cursorSeekValue", 3)));
+        int cursorSpeedValue = prefs.getInt("cursorSeekValue", 3)-1;
         cursorSeek.setProgress(cursorSpeedValue);
 
         upSeek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -1317,7 +1343,6 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
     {
 
         final Dialog d = new Dialog(BluetoothChat.this);
-        //d.setTitle("Motion Control Calibration");
         d.requestWindowFeature(Window.FEATURE_NO_TITLE);
         d.setContentView(R.layout.jump_to_slide);
         final EditText jumpToSlideInput = (EditText) d.findViewById(R.id.jumpToSlideInput);
