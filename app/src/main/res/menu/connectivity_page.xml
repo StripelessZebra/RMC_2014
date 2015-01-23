@@ -16,6 +16,10 @@
         android:icon="@drawable/ic_action_settings"
         android:showAsAction="always|withText"/>-->
 
+    <item android:id="@+id/receivedPPTSlides"
+        android:title="PPT Notes"
+        android:showAsAction="always|withText"/>
+
     <item android:id="@+id/secure_connect_scan"
         android:title="Connect Device"
         android:showAsAction="always|withText" />

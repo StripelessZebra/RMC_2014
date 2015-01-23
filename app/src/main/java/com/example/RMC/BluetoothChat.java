@@ -13,6 +13,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -29,7 +32,6 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -44,6 +46,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.NumberPicker;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.Spinner;
@@ -53,7 +57,7 @@ import android.widget.Toast;
 import android.os.Vibrator;
 import android.widget.ToggleButton;
 
-import javax.crypto.Mac;
+import java.util.ArrayList;
 
 /**
  * This is the main Activity that displays the current chat session.
@@ -111,7 +115,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
     SharedPreferences.Editor editor;
     String pairedDeviceAddress,hasOnCreateOptionsMenuBeenCreated,isDeviceConnected = "", isMotionControlSelected="";
     Menu settingsMenu;
-    MenuItem connectBT, disconnectBT, settingOption,userManual;
+    MenuItem connectBT, disconnectBT, settingOption, userManual, receivedPPTSlides;
     private SeekBar upSeek = null;
     private SeekBar downSeek = null;
     private SeekBar leftSeek=null;
@@ -129,6 +133,17 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
     boolean wasCursorSpeedValueChanged = false;
     boolean isLaserPointerOn = false;
     boolean isHighlighterOn = false;
+
+    private RadioGroup pptToolsRG;
+    private RadioButton pptCursor;
+    private RadioButton pptHighlighter;
+    private RadioButton pptLaserPointer;
+    private RadioButton defaultRadioButton;
+
+    ArrayList<String> receivedPPTText = new ArrayList<String>();
+    String pptFilePathFromPC = "";
+    int pptNumberOfSlides = 0;
+    int selectedSlideNumber = 0;
 
     String[] program = {
             "Microsoft PowerPoint",
@@ -187,6 +202,11 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                 //Toast.makeText(getApplicationContext(),deviceAddress, Toast.LENGTH_SHORT).show();
             }
         }
+
+        Drawable dr = getResources().getDrawable(R.drawable.cursor);
+        Bitmap bitmap = ((BitmapDrawable) dr).getBitmap();
+        Drawable d = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap, 50, 50, true));
+
 
         // Set up the window layout
         setContentView(R.layout.connectivity_page);
@@ -258,6 +278,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                         toggleButtonLL.setVisibility(View.GONE);
                         highlightToggleLL.setVisibility(View.GONE);
                         mouseButtonLL.setVisibility(View.GONE);
+                        receivedPPTSlides.setVisible(false);
                     }
                 }
                 else if(isMotionControlSelected=="YES"){
@@ -272,6 +293,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                         toggle.setChecked(false);
                         highlightToggleLL.setVisibility(View.GONE);
                         mouseButtonLL.setVisibility(View.GONE);
+                        receivedPPTSlides.setVisible(false);
                     }
                 }
             }
@@ -282,7 +304,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
             }
         });
 
-        pptToolsSpinner = (Spinner) findViewById(R.id.pptToolsSpinner);
+        /*pptToolsSpinner = (Spinner) findViewById(R.id.pptToolsSpinner);
         pptSpinnerAdapter = new CustomProgramList(this, pptTools, pptToolsImage);
         pptSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         pptToolsSpinner.setAdapter(pptSpinnerAdapter);
@@ -343,7 +365,21 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
             public void onNothingSelected(AdapterView<?> adapterView) {
 
             }
-        });
+        });*/
+
+        pptToolsRG = (RadioGroup) findViewById(R.id.pptToolsRG);
+        pptCursor = (RadioButton) findViewById(R.id.pptCursor);
+        Drawable cursorImg = getResources().getDrawable(R.drawable.cursor);
+        cursorImg.setBounds( 0, 0, 100, 100 );
+        pptCursor.setCompoundDrawables(cursorImg, null, null, null);
+        pptHighlighter = (RadioButton) findViewById(R.id.pptHighlighter);
+        Drawable highlighterImg = getResources().getDrawable(R.drawable.highlighter);
+        highlighterImg.setBounds( 0, 0, 100, 100 );
+        pptHighlighter.setCompoundDrawables(highlighterImg, null, null, null );
+        pptLaserPointer = (RadioButton) findViewById(R.id.pptLaserPointer);
+        Drawable laserPointerImg = getResources().getDrawable(R.drawable.laser_icon);
+        laserPointerImg.setBounds( 0, 0, 100, 100 );
+        pptLaserPointer.setCompoundDrawables(laserPointerImg, null, null, null );
 
         pptMinimize = (ImageView) findViewById(R.id.pptMinimize);
         pptMaximize = (ImageView) findViewById(R.id.pptMaximize);
@@ -351,6 +387,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
         pptRight = (ImageView) findViewById(R.id.pptRight);
         blankScreenBtn = (Button) findViewById(R.id.blankScreenBtn);
         jumpToSlideBtn = (Button) findViewById(R.id.jumpToSlideBtn);
+        jumpToSlideBtn.setVisibility(View.GONE);
 
         pptMinimize.setOnClickListener(new OnClickListener() {
             @Override
@@ -544,16 +581,39 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                     highlightToggleLL.setVisibility(View.VISIBLE);
                     mouseButtonLL.setVisibility(View.VISIBLE);
                     //eraseAnnotationsBtn.setVisibility(View.VISIBLE);
+                    pptToolsRG.check(R.id.pptCursor);
                     sendMessage("show cr");
-                    pptToolsSpinner.setSelection(0);
+                    //pptToolsSpinner.setSelection(0);
                 } else {
                     // The toggle is disabled
-                    sendMessage("hide cr");
+
+                    pptCursor.setChecked(true);
+                    pptHighlighter.setChecked(false);
+                    pptLaserPointer.setChecked(false);
+
                     highlightToggleLL.setVisibility(View.GONE);
                     //highlightToggle.setChecked(false);
                     //laserPointerToggle.setChecked(false);
                     mouseButtonLL.setVisibility(View.GONE);
                     eraseAnnotationsBtn.setVisibility(View.GONE);
+                    new CountDownTimer(100, 100) {
+
+                        public void onTick(long millisUntilFinished) {
+                        }
+
+                        public void onFinish() {
+                            if(isLaserPointerOn == true) {
+                                isLaserPointerOn = false;
+                                sendMessage("LP off");
+                            }
+                            if(isHighlighterOn == true) {
+                                isHighlighterOn = false;
+                                sendMessage("HL off");
+                            }
+                            sendMessage("hide cr");
+                        }
+                    }.start();
+
                     if (programSelectionSpinner.getSelectedItem().toString().equals("Microsoft PowerPoint")){
                         ppt.setVisibility(View.VISIBLE);
                         mediaPlay.setVisibility(View.GONE);
@@ -620,6 +680,70 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
         String cursorSeekValue = "0" + String.valueOf(prefs.getInt("cursorSeekValue", 3));
 
         if(isMotionControlSelected=="YES") {
+
+            pptToolsRG.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
+                    defaultRadioButton = (RadioButton) findViewById(checkedId);
+
+                    //Toast.makeText(BluetoothChat.this,pptCursor.getText(), Toast.LENGTH_SHORT).show();
+                    if (defaultRadioButton.getText().toString().equals("Cursor")) {
+                        if(isLaserPointerOn == true) {
+                            isLaserPointerOn = false;
+                            sendMessage("LP off");
+                        }
+                        if(isHighlighterOn == true) {
+                            isHighlighterOn = false;
+                            sendMessage("HL off");
+                        }
+                        mouseButtonLL.setVisibility(View.VISIBLE);
+                        eraseAnnotationsBtn.setVisibility(View.GONE);
+                        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                        v.vibrate(50);
+                    }
+                    else if (defaultRadioButton.getText().toString().equals("Highlighter")) {
+                        if(isLaserPointerOn == true) {
+                            isLaserPointerOn = false;
+                            sendMessage("LP off");
+                        }
+                        new CountDownTimer(100, 100) {
+
+                            public void onTick(long millisUntilFinished) {
+                            }
+
+                            public void onFinish() {
+                                isHighlighterOn = true;
+                                sendMessage("HL on");
+                                mouseButtonLL.setVisibility(View.GONE);
+                                eraseAnnotationsBtn.setVisibility(View.VISIBLE);
+                            }
+                         }.start();
+                        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                        v.vibrate(50);
+                    }
+                    else if (defaultRadioButton.getText().toString().equals("Laser Pointer")) {
+                        if(isHighlighterOn == true) {
+                            isHighlighterOn = false;
+                            sendMessage("HL off");
+                        }
+                        new CountDownTimer(100, 100) {
+                            public void onTick(long millisUntilFinished) {
+                            }
+
+                            public void onFinish() {
+                                isLaserPointerOn = true;
+                                sendMessage("LP on");
+                                mouseButtonLL.setVisibility(View.GONE);
+                                eraseAnnotationsBtn.setVisibility(View.GONE);
+                            }
+                        }.start();
+                        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                        v.vibrate(50);
+                    }
+
+                }
+            });
+
                 /*highlightToggle = (ToggleButton) findViewById(R.id.highlightToggleButton);
                 laserPointerToggle = (ToggleButton) findViewById(R.id.laserPointerToggleButton);
 
@@ -929,6 +1053,8 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
         disconnectBT = settingsMenu.findItem(R.id.disconnectDevice);
         //settingOption = settingsMenu.findItem(R.id.calibrationSettings);
         //settingOption.setVisible(false);
+        receivedPPTSlides = settingsMenu.findItem(R.id.receivedPPTSlides);
+        receivedPPTSlides.setVisible(false);
         userManual = settingsMenu.findItem(R.id.userManual);
         userManual.setVisible(false);
         //Checking if user has previously connected to any device through this app
@@ -981,6 +1107,10 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
             /*case R.id.calibrationSettings:
                 displayDialog();
                 return true;*/
+
+            case R.id.receivedPPTSlides:
+                displayPPTSlides();
+                return true;
         /*case R.id.insecure_connect_scan:
             // Launch the DeviceListActivity to see devices and do scan
             serverIntent = new Intent(this, DeviceListActivity.class);
@@ -1032,6 +1162,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                                 if (programSelectionSpinner.getSelectedItem().toString().equals("Microsoft PowerPoint")) {
                                     ppt.setVisibility(View.VISIBLE);
                                     mediaPlay.setVisibility(View.GONE);
+                                    openPPTOnceConnected();
                                 } else if (programSelectionSpinner.getSelectedItem().toString().equals("Windows Media Player")) {
                                     ppt.setVisibility(View.GONE);
                                     mediaPlay.setVisibility(View.VISIBLE);
@@ -1056,7 +1187,9 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                             //setStatus(R.string.title_not_connected);
                             tv.setText("");
                             tv.setBackground(getResources().getDrawable(R.drawable.disconnected));
-
+                            receivedPPTText.clear();
+                            pptFilePathFromPC="";
+                            pptNumberOfSlides=0;
                             defaultTV.setText(R.string.not_connected);
                             //defaultTV.setVisibility(View.VISIBLE);
                             programSelectionLL.setVisibility(View.GONE);
@@ -1072,6 +1205,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                                 connectBT.setVisible(true);
                                 disconnectBT.setVisible(false);
                                 //settingOption.setVisible(false);
+                                receivedPPTSlides.setVisible(false);
                                 userManual.setVisible(true);
                             }
                             break;
@@ -1087,9 +1221,51 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                 case MESSAGE_READ:
                     byte[] readBuf = (byte[]) msg.obj;
                     // construct a string from the valid bytes in the buffer
-                    String readMessage = new String(readBuf, 0, msg.arg1);
+                    final String readMessage = new String(readBuf, 0, msg.arg1);
+                    new CountDownTimer(100, 100) {
+
+                        public void onTick(long millisUntilFinished) {
+                        }
+
+                        public void onFinish() {
+                            //Toast.makeText(getApplicationContext(),readMessage,Toast.LENGTH_SHORT).show();
+                            if(readMessage.contains("pptFilePath")){
+                                pptFilePathFromPC = removeWords(readMessage, "pptFilePath");
+                                if(pptFilePathFromPC.equals("")){
+                                    receivedPPTSlides.setVisible(false);
+                                }
+                                else{
+                                    receivedPPTSlides.setVisible(true);
+                                }
+                            }
+                            else if(readMessage.contains("pptSlideCount")){
+                                pptNumberOfSlides = Integer.parseInt(removeWords(readMessage, "pptSlideCount"));
+                                if(pptNumberOfSlides!=0){
+                                    jumpToSlideBtn.setVisibility(View.VISIBLE);
+                                }
+                            }
+                            else if(readMessage.contains("contains")) {
+                                if(readMessage.contains("The slide contains: ")){
+                                    receivedPPTText.add(removeWords(readMessage, "The slide contains: "));
+                                    Log.i("RECEIVED: ", "RECEIVED: " + readMessage);
+                                }
+                                else{
+                                    receivedPPTText.add(readMessage);
+                                    Log.i("RECEIVED: ", "RECEIVED: " + readMessage);
+                                }
+                            }
+                            else if(readMessage.equals("RESULT_OK_MENU")){
+                                //Open dialog for menu with values
+
+                            }
+                            else if(readMessage.equals("RESULT_OK_JUMP")){
+                                //Open dialog for jump to slide with dropdown values
+                                jumpToSlideDialog();
+                            }
+                        }
+                    }.start();
                     //mConversationArrayAdapter.add(mConnectedDeviceName+":  " + readMessage);
-                    Toast.makeText(getApplicationContext(),readMessage,Toast.LENGTH_SHORT).show();
+
                     break;
                 case MESSAGE_DEVICE_NAME:
                     // save the connected device's name
@@ -1138,6 +1314,23 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
 
     }
 
+    public static String removeWords(String word ,String remove) {
+        return word.replace(remove,"");
+    }
+
+    public void displayPPTSlides(){
+        if(pptNumberOfSlides!=0) {
+            Log.i("MENU PRESSED", "FILEPATH: " + pptFilePathFromPC);
+            Log.i("MENU PRESSED", "NUMBER OF SLIDES: " + pptNumberOfSlides);
+            for (int i = 0; i < receivedPPTText.size(); i++) {
+                receivedPPTText.get(i).toString();
+                Log.i("MENU PRESSED", receivedPPTText.get(i).toString());
+            }
+        }
+        else{
+            sendMessage("PPTmenu");
+        }
+    }
 
     public void displayDialog()
     {
@@ -1342,66 +1535,110 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
     public void jumpToSlideDialog()
     {
 
-        final Dialog d = new Dialog(BluetoothChat.this);
-        d.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        d.setContentView(R.layout.jump_to_slide);
-        final EditText jumpToSlideInput = (EditText) d.findViewById(R.id.jumpToSlideInput);
-        Button goToSlide = (Button) d.findViewById(R.id.goToSlide);
-        Button cancelJump = (Button) d.findViewById(R.id.cancelJump);
+        if(pptNumberOfSlides!=0) {
+            Log.i("MENU PRESSED", "NUMBER OF SLIDES: " + pptNumberOfSlides);
 
-        jumpToSlideInput.addTextChangedListener(new TextWatcher() {
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                // TODO Auto-generated method stub
-
+            final ArrayList <String> slideNumber= new ArrayList<String>();
+            for(int i = 1; i<=pptNumberOfSlides; i++){
+                slideNumber.add(String.valueOf(i));
             }
 
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // TODO Auto-generated method stub
+            final Dialog d = new Dialog(BluetoothChat.this);
+            d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            d.setContentView(R.layout.jump_to_slide);
+            //final EditText jumpToSlideInput = (EditText) d.findViewById(R.id.jumpToSlideInput);
+            final Spinner jumpToSlideInput = (Spinner) d.findViewById(R.id.jumpToSlideInput);
+            Button goToSlide = (Button) d.findViewById(R.id.goToSlide);
+            Button cancelJump = (Button) d.findViewById(R.id.cancelJump);
 
-            }
+            ArrayAdapter<String> adapter= new ArrayAdapter<String>(this,android.
+                    R.layout.simple_spinner_dropdown_item ,slideNumber);
+            jumpToSlideInput.setAdapter(adapter);
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(jumpToSlideInput.getText().toString().equals("0")){
-                    //jumpToSlideInput.setText("");
+            jumpToSlideInput.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view,int position, long id) {
+                    selectedSlideNumber = Integer.parseInt(slideNumber.get(jumpToSlideInput.getSelectedItemPosition()));
                 }
-            }
-        });
 
-        goToSlide.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // dismiss the dialog
-                if(jumpToSlideInput.getText().toString().equals("")||jumpToSlideInput.getText().toString().equals("0")||jumpToSlideInput.getText().toString().equals("00")){
-                    jumpToSlideInput.setText("");
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+                    // TODO Auto-generated method stub
                 }
-                else {
-                    String slideNum = jumpToSlideInput.getText().toString();
-                    if(slideNum.length()<2){
-                        slideNum = "0"+slideNum;
-                        //Toast.makeText(getApplicationContext(),slideNum,Toast.LENGTH_SHORT).show();
-                        sendMessage("goto " + slideNum);
+            });
+
+
+            /*jumpToSlideInput.addTextChangedListener(new TextWatcher() {
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    // TODO Auto-generated method stub
+
+                }
+
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    // TODO Auto-generated method stub
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    if(jumpToSlideInput.getText().toString().equals("0")){
+                        //jumpToSlideInput.setText("");
                     }
-                    else if(slideNum.length()==2){
-                        sendMessage("goto " + slideNum);
-                        //Toast.makeText(getApplicationContext(),slideNum,Toast.LENGTH_SHORT).show();
+                }
+            });*/
+
+            goToSlide.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(selectedSlideNumber!=0){
+                        sendMessage("goto " + selectedSlideNumber);
                     }
                     d.dismiss();
+                    selectedSlideNumber=0;
+
+                    // dismiss the dialog
+                    /*if(jumpToSlideInput.getText().toString().equals("")||jumpToSlideInput.getText().toString().equals("0")||jumpToSlideInput.getText().toString().equals("00")){
+                        jumpToSlideInput.setText("");
+                    }
+                    else {
+                        String slideNum = jumpToSlideInput.getText().toString();
+                        if(slideNum.length()<2){
+                            slideNum = "0"+slideNum;
+                            //Toast.makeText(getApplicationContext(),slideNum,Toast.LENGTH_SHORT).show();
+                            sendMessage("goto " + slideNum);
+                        }
+                        else if(slideNum.length()==2){
+                            sendMessage("goto " + slideNum);
+                            //Toast.makeText(getApplicationContext(),slideNum,Toast.LENGTH_SHORT).show();
+                        }
+                        d.dismiss();
+                    }*/
                 }
-            }
-        });
-        cancelJump.setOnClickListener(new OnClickListener()
-        {
-            @Override
-            public void onClick(View v) {
-                // dismiss the dialog
-                d.dismiss();
-            }
-        });
-        d.show();
+            });
+            cancelJump.setOnClickListener(new OnClickListener()
+            {
+                @Override
+                public void onClick(View v) {
+                    // dismiss the dialog
+                    d.dismiss();
+                    selectedSlideNumber = 0;
+                }
+            });
+            d.show();
+        }
+        else{
+            sendMessage("PPTjump");
+        }
+
+
+    }
+
+    public void openPPTOnceConnected(){
+        sendMessage("pickPPT");
     }
 
     @Override
