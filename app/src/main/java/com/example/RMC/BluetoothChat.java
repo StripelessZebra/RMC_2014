@@ -27,6 +27,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -46,6 +47,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.NumberPicker;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
@@ -56,6 +58,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.os.Vibrator;
 import android.widget.ToggleButton;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -115,17 +119,19 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
     SharedPreferences.Editor editor;
     String pairedDeviceAddress,hasOnCreateOptionsMenuBeenCreated,isDeviceConnected = "", isMotionControlSelected="";
     Menu settingsMenu;
-    MenuItem connectBT, disconnectBT, settingOption, userManual, receivedPPTSlides;
+    MenuItem connectBT, disconnectBT, settingOption, userManual, receivedPPTSlides, openPPT;
     private SeekBar upSeek = null;
     private SeekBar downSeek = null;
     private SeekBar leftSeek=null;
     private SeekBar rightSeek = null;
     private SeekBar cursorSeek = null;
+    Dialog loadingDialog;
     int upValue;
     int downValue;
     int leftValue;
     int rightValue;
     int cursorValue;
+    int currentSlideNumber_Menu = 1;
     boolean wasUpGestureValueChanged = false;
     boolean wasDownGestureValueChanged = false;
     boolean wasLeftGestureValueChanged = false;
@@ -272,6 +278,12 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                         ppt.setVisibility(View.VISIBLE);
                         mediaPlay.setVisibility(View.GONE);
                         toggleButtonLL.setVisibility(View.VISIBLE);
+                        if(receivedPPTText.size()!=0){
+                            receivedPPTSlides.setVisible(true);
+                        }
+                        else if(receivedPPTText.size()==0){
+                            openPPT.setVisible(true);
+                        }
                     } else if (programSelectionSpinner.getSelectedItem().toString().equals("Windows Media Player")) {
                         ppt.setVisibility(View.GONE);
                         mediaPlay.setVisibility(View.VISIBLE);
@@ -279,6 +291,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                         highlightToggleLL.setVisibility(View.GONE);
                         mouseButtonLL.setVisibility(View.GONE);
                         receivedPPTSlides.setVisible(false);
+                        openPPT.setVisible(false);
                     }
                 }
                 else if(isMotionControlSelected=="YES"){
@@ -286,6 +299,12 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                         ppt.setVisibility(View.VISIBLE);
                         mediaPlay.setVisibility(View.GONE);
                         toggleButtonLL.setVisibility(View.VISIBLE);
+                        if(receivedPPTText.size()!=0){
+                            receivedPPTSlides.setVisible(true);
+                        }
+                        else if(receivedPPTText.size()==0){
+                            openPPT.setVisible(true);
+                        }
                     } else if (programSelectionSpinner.getSelectedItem().toString().equals("Windows Media Player")) {
                         ppt.setVisibility(View.GONE);
                         mediaPlay.setVisibility(View.VISIBLE);
@@ -294,6 +313,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                         highlightToggleLL.setVisibility(View.GONE);
                         mouseButtonLL.setVisibility(View.GONE);
                         receivedPPTSlides.setVisible(false);
+                        openPPT.setVisible(false);
                     }
                 }
             }
@@ -1053,6 +1073,8 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
         disconnectBT = settingsMenu.findItem(R.id.disconnectDevice);
         //settingOption = settingsMenu.findItem(R.id.calibrationSettings);
         //settingOption.setVisible(false);
+        openPPT = settingsMenu.findItem(R.id.openPPT);
+        openPPT.setVisible(false);
         receivedPPTSlides = settingsMenu.findItem(R.id.receivedPPTSlides);
         receivedPPTSlides.setVisible(false);
         userManual = settingsMenu.findItem(R.id.userManual);
@@ -1108,6 +1130,10 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                 displayDialog();
                 return true;*/
 
+            case R.id.openPPT:
+                openPPTOnceConnected();
+                return true;
+
             case R.id.receivedPPTSlides:
                 displayPPTSlides();
                 return true;
@@ -1162,15 +1188,17 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                                 if (programSelectionSpinner.getSelectedItem().toString().equals("Microsoft PowerPoint")) {
                                     ppt.setVisibility(View.VISIBLE);
                                     mediaPlay.setVisibility(View.GONE);
-                                    openPPTOnceConnected();
+                                    openPPT.setVisible(true);
                                 } else if (programSelectionSpinner.getSelectedItem().toString().equals("Windows Media Player")) {
                                     ppt.setVisibility(View.GONE);
                                     mediaPlay.setVisibility(View.VISIBLE);
                                     toggleButtonLL.setVisibility(View.GONE);
                                     highlightToggleLL.setVisibility(View.GONE);
                                     mouseButtonLL.setVisibility(View.GONE);
+                                    openPPT.setVisible(false);
                                 }
                             }
+                            currentSlideNumber_Menu = 1;
                             break;
                         case BluetoothChatService.STATE_CONNECTING:
                             tv.setText("");
@@ -1200,11 +1228,14 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                             mouseButtonLL.setVisibility(View.GONE);
                             eraseAnnotationsBtn.setVisibility(View.GONE);
                             isDeviceConnected = "";
+                            jumpToSlideBtn.setVisibility(View.GONE);
+                            currentSlideNumber_Menu = 1;
 
                             if(hasOnCreateOptionsMenuBeenCreated =="YES" && isDeviceConnected =="") {
                                 connectBT.setVisible(true);
                                 disconnectBT.setVisible(false);
                                 //settingOption.setVisible(false);
+                                openPPT.setVisible(false);
                                 receivedPPTSlides.setVisible(false);
                                 userManual.setVisible(true);
                             }
@@ -1231,18 +1262,9 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                             //Toast.makeText(getApplicationContext(),readMessage,Toast.LENGTH_SHORT).show();
                             if(readMessage.contains("pptFilePath")){
                                 pptFilePathFromPC = removeWords(readMessage, "pptFilePath");
-                                if(pptFilePathFromPC.equals("")){
-                                    receivedPPTSlides.setVisible(false);
-                                }
-                                else{
-                                    receivedPPTSlides.setVisible(true);
-                                }
                             }
                             else if(readMessage.contains("pptSlideCount")){
                                 pptNumberOfSlides = Integer.parseInt(removeWords(readMessage, "pptSlideCount"));
-                                if(pptNumberOfSlides!=0){
-                                    jumpToSlideBtn.setVisibility(View.VISIBLE);
-                                }
                             }
                             else if(readMessage.contains("contains")) {
                                 if(readMessage.contains("The slide contains: ")){
@@ -1254,13 +1276,25 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                                     Log.i("RECEIVED: ", "RECEIVED: " + readMessage);
                                 }
                             }
-                            else if(readMessage.equals("RESULT_OK_MENU")){
-                                //Open dialog for menu with values
-
+                            else if(readMessage.equals("startOfRetrieving")){
+                                displayLoadingDialog();
                             }
-                            else if(readMessage.equals("RESULT_OK_JUMP")){
-                                //Open dialog for jump to slide with dropdown values
-                                jumpToSlideDialog();
+                            else if(readMessage.equals("endOfRetrieving")){
+                                if(pptFilePathFromPC.equals("")){
+                                    receivedPPTSlides.setVisible(false);
+                                    openPPT.setVisible(true);
+                                }
+                                else{
+                                    receivedPPTSlides.setVisible(true);
+                                    openPPT.setVisible(false);
+                                }
+                                if(pptNumberOfSlides!=0){
+                                    jumpToSlideBtn.setVisibility(View.VISIBLE);
+                                }
+                                else{
+                                    jumpToSlideBtn.setVisibility(View.GONE);
+                                }
+                                loadingDialog.dismiss();
                             }
                         }
                     }.start();
@@ -1320,16 +1354,84 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
 
     public void displayPPTSlides(){
         if(pptNumberOfSlides!=0) {
-            Log.i("MENU PRESSED", "FILEPATH: " + pptFilePathFromPC);
-            Log.i("MENU PRESSED", "NUMBER OF SLIDES: " + pptNumberOfSlides);
-            for (int i = 0; i < receivedPPTText.size(); i++) {
-                receivedPPTText.get(i).toString();
-                Log.i("MENU PRESSED", receivedPPTText.get(i).toString());
+            final Dialog d = new Dialog(BluetoothChat.this);
+            d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            d.setContentView(R.layout.slides_layout);
+            TextView pptFileName = (TextView) d.findViewById(R.id.pptFileName);
+            final TextView slideNumberTv = (TextView) d.findViewById(R.id.slideNumberTv);
+            slideNumberTv.setText("Slide Number: " + String.valueOf(currentSlideNumber_Menu));
+            SeekBar slideSeek = (SeekBar) d.findViewById(R.id.slideSeek);
+            slideSeek.setMax(pptNumberOfSlides - 1);
+            slideSeek.setProgress(currentSlideNumber_Menu-1);
+            final TextView pptSlideText = (TextView) d.findViewById(R.id.pptSlideText);
+            pptSlideText.setMovementMethod(new ScrollingMovementMethod());
+            if(pptNumberOfSlides>0 && pptNumberOfSlides<2){
+                String textsInSlide = "";
+                for (String s : receivedPPTText)
+                {
+                    textsInSlide += s + "\r\n";
+                }
+                pptSlideText.setText(textsInSlide);
             }
+            else if(pptNumberOfSlides>1){
+                pptSlideText.setText(receivedPPTText.get(currentSlideNumber_Menu - 1).toString());
+            }
+            Button closeSlideBtn = (Button) d.findViewById(R.id.closeSlideBtn);
+
+            String fileNameWithPPTExtension = pptFilePathFromPC.substring(pptFilePathFromPC.lastIndexOf("\\") + 1);
+            if(fileNameWithPPTExtension.length()>31){
+                String shorterFileNameWithPPTExtension = fileNameWithPPTExtension.substring(0, Math.min(fileNameWithPPTExtension.length(), 30)) + "...";
+                pptFileName.setText(shorterFileNameWithPPTExtension);
+            }
+            else if(fileNameWithPPTExtension.length()<=31){
+                pptFileName.setText(fileNameWithPPTExtension);
+            }
+            slideSeek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
+
+                    currentSlideNumber_Menu = progress + 1;
+                    slideNumberTv.setText("Slide Number: " + String.valueOf(currentSlideNumber_Menu));
+                    wasUpGestureValueChanged = true;
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                    if(pptNumberOfSlides>1) {
+                        int indexForSlide = currentSlideNumber_Menu - 1;
+                        pptSlideText.setText(receivedPPTText.get(indexForSlide).toString());
+                        sendMessage("goto " + currentSlideNumber_Menu);
+                    }
+                }
+            });
+            closeSlideBtn.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    d.dismiss();
+                }
+            });
+            d.show();
         }
         else{
-            sendMessage("PPTmenu");
+            //sendMessage("PPTmenu");
         }
+    }
+
+    public void displayLoadingDialog(){
+        loadingDialog = new Dialog(BluetoothChat.this);
+        loadingDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        loadingDialog.setContentView(R.layout.loading_layout);
+        ProgressBar pb = (ProgressBar)loadingDialog.findViewById(R.id.progress_bar);
+        pb.setVisibility(View.VISIBLE);
+        loadingDialog.setCancelable(false);
+        loadingDialog.setCanceledOnTouchOutside(false);
+        loadingDialog.show();
     }
 
     public void displayDialog()
