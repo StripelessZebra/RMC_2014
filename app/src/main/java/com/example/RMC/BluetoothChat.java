@@ -1365,6 +1365,8 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
             slideSeek.setProgress(currentSlideNumber_Menu-1);
             final TextView pptSlideText = (TextView) d.findViewById(R.id.pptSlideText);
             pptSlideText.setMovementMethod(new ScrollingMovementMethod());
+            Button goToSlideBtn = (Button) d.findViewById(R.id.goToSlideBtn);
+            Button closeSlideBtn = (Button) d.findViewById(R.id.closeSlideBtn);
             if(pptNumberOfSlides>0 && pptNumberOfSlides<2){
                 String textsInSlide = "";
                 for (String s : receivedPPTText)
@@ -1376,7 +1378,6 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
             else if(pptNumberOfSlides>1){
                 pptSlideText.setText(receivedPPTText.get(currentSlideNumber_Menu - 1).toString());
             }
-            Button closeSlideBtn = (Button) d.findViewById(R.id.closeSlideBtn);
 
             String fileNameWithPPTExtension = pptFilePathFromPC.substring(pptFilePathFromPC.lastIndexOf("\\") + 1);
             if(fileNameWithPPTExtension.length()>31){
@@ -1406,10 +1407,18 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                     if(pptNumberOfSlides>1) {
                         int indexForSlide = currentSlideNumber_Menu - 1;
                         pptSlideText.setText(receivedPPTText.get(indexForSlide).toString());
+                    }
+                }
+            });
+            goToSlideBtn.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(pptNumberOfSlides>1) {
                         sendMessage("goto " + currentSlideNumber_Menu);
                     }
                 }
             });
+
             closeSlideBtn.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {

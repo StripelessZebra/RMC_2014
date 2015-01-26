@@ -55,6 +55,18 @@
         android:gravity="center">
 
         <Button
+            android:id="@+id/goToSlideBtn"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:background="@drawable/settings_button_style"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="15dp"
+            android:layout_marginRight="20dp"
+            android:textColor="#fff"
+            android:text="Go"
+            />
+
+        <Button
             android:id="@+id/closeSlideBtn"
             android:layout_width="100dp"
             android:layout_height="40dp"
