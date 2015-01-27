@@ -119,7 +119,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
     SharedPreferences.Editor editor;
     String pairedDeviceAddress,hasOnCreateOptionsMenuBeenCreated,isDeviceConnected = "", isMotionControlSelected="";
     Menu settingsMenu;
-    MenuItem connectBT, disconnectBT, settingOption, userManual, receivedPPTSlides, openPPT;
+    MenuItem connectBT, disconnectBT, settingOption, userManual, receivedPPTSlides, openPPT, openMP;
     private SeekBar upSeek = null;
     private SeekBar downSeek = null;
     private SeekBar leftSeek=null;
@@ -139,6 +139,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
     boolean wasCursorSpeedValueChanged = false;
     boolean isLaserPointerOn = false;
     boolean isHighlighterOn = false;
+    boolean isOpenMPSelected = false;
 
     private RadioGroup pptToolsRG;
     private RadioButton pptCursor;
@@ -278,6 +279,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                         ppt.setVisibility(View.VISIBLE);
                         mediaPlay.setVisibility(View.GONE);
                         toggleButtonLL.setVisibility(View.VISIBLE);
+                        openMP.setVisible(false);
                         if(receivedPPTText.size()!=0){
                             receivedPPTSlides.setVisible(true);
                         }
@@ -292,6 +294,9 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                         mouseButtonLL.setVisibility(View.GONE);
                         receivedPPTSlides.setVisible(false);
                         openPPT.setVisible(false);
+                        if(isOpenMPSelected==false) {
+                            openMP.setVisible(true);
+                        }
                     }
                 }
                 else if(isMotionControlSelected=="YES"){
@@ -299,6 +304,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                         ppt.setVisibility(View.VISIBLE);
                         mediaPlay.setVisibility(View.GONE);
                         toggleButtonLL.setVisibility(View.VISIBLE);
+                        openMP.setVisible(false);
                         if(receivedPPTText.size()!=0){
                             receivedPPTSlides.setVisible(true);
                         }
@@ -314,6 +320,9 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                         mouseButtonLL.setVisibility(View.GONE);
                         receivedPPTSlides.setVisible(false);
                         openPPT.setVisible(false);
+                        if(isOpenMPSelected==false) {
+                            openMP.setVisible(true);
+                        }
                     }
                 }
             }
@@ -1075,6 +1084,8 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
         //settingOption.setVisible(false);
         openPPT = settingsMenu.findItem(R.id.openPPT);
         openPPT.setVisible(false);
+        openMP = settingsMenu.findItem(R.id.openMP);
+        openMP.setVisible(false);
         receivedPPTSlides = settingsMenu.findItem(R.id.receivedPPTSlides);
         receivedPPTSlides.setVisible(false);
         userManual = settingsMenu.findItem(R.id.userManual);
@@ -1129,6 +1140,10 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
             /*case R.id.calibrationSettings:
                 displayDialog();
                 return true;*/
+
+            case R.id.openMP:
+                openMPPlaylist();
+                return true;
 
             case R.id.openPPT:
                 openPPTOnceConnected();
@@ -1189,6 +1204,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                                     ppt.setVisibility(View.VISIBLE);
                                     mediaPlay.setVisibility(View.GONE);
                                     openPPT.setVisible(true);
+                                    openMP.setVisible(false);
                                 } else if (programSelectionSpinner.getSelectedItem().toString().equals("Windows Media Player")) {
                                     ppt.setVisibility(View.GONE);
                                     mediaPlay.setVisibility(View.VISIBLE);
@@ -1196,8 +1212,12 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                                     highlightToggleLL.setVisibility(View.GONE);
                                     mouseButtonLL.setVisibility(View.GONE);
                                     openPPT.setVisible(false);
+                                    if(isOpenMPSelected==false) {
+                                        openMP.setVisible(true);
+                                    }
                                 }
                             }
+                            isOpenMPSelected = false;
                             currentSlideNumber_Menu = 1;
                             break;
                         case BluetoothChatService.STATE_CONNECTING:
@@ -1230,11 +1250,13 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                             isDeviceConnected = "";
                             jumpToSlideBtn.setVisibility(View.GONE);
                             currentSlideNumber_Menu = 1;
+                            isOpenMPSelected = false;
 
                             if(hasOnCreateOptionsMenuBeenCreated =="YES" && isDeviceConnected =="") {
                                 connectBT.setVisible(true);
                                 disconnectBT.setVisible(false);
                                 //settingOption.setVisible(false);
+                                openMP.setVisible(false);
                                 openPPT.setVisible(false);
                                 receivedPPTSlides.setVisible(false);
                                 userManual.setVisible(true);
@@ -1285,8 +1307,13 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                                     openPPT.setVisible(true);
                                 }
                                 else{
-                                    receivedPPTSlides.setVisible(true);
-                                    openPPT.setVisible(false);
+                                    if (programSelectionSpinner.getSelectedItem().toString().equals("Microsoft PowerPoint")) {
+                                        receivedPPTSlides.setVisible(true);
+                                        openPPT.setVisible(false);
+                                    } else if (programSelectionSpinner.getSelectedItem().toString().equals("Windows Media Player")) {
+                                        receivedPPTSlides.setVisible(false);
+                                        openPPT.setVisible(false);
+                                    }
                                 }
                                 if(pptNumberOfSlides!=0){
                                     jumpToSlideBtn.setVisibility(View.VISIBLE);
@@ -1295,6 +1322,10 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                                     jumpToSlideBtn.setVisibility(View.GONE);
                                 }
                                 loadingDialog.dismiss();
+                            }
+                            else if(readMessage.equals("endOfOpeningMP")){
+                                isOpenMPSelected = true;
+                                openMP.setVisible(false);
                             }
                         }
                     }.start();
@@ -1747,6 +1778,8 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
 
 
     }
+
+    public void openMPPlaylist(){sendMessage("pickMPL");}
 
     public void openPPTOnceConnected(){
         sendMessage("pickPPT");
