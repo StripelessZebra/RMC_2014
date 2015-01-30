@@ -3,20 +3,7 @@
     android:layout_height="fill_parent" >
 
     <TextView
-        android:id="@+id/pptFileName"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:textSize="18dp"
-        android:textStyle="bold|italic"
-        android:gravity="center"
-        android:text="RMC_Powerpoint_Master_Copy.pptx"/>
-
-    <TextView
         android:id="@+id/slideNumberTv"
-        android:layout_below="@+id/pptFileName"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
@@ -35,10 +22,24 @@
         android:layout_marginRight="5dp" />
 
     <TextView
-        android:id="@+id/pptSlideText"
+        android:id="@+id/pptSlideTitle"
         android:layout_below="@+id/slideSeek"
         android:layout_width="fill_parent"
-        android:layout_height="350dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:textSize="18dp"
+        android:textStyle="bold|italic"
+        android:maxLines = "10"
+        android:scrollbars = "vertical"
+        android:text="ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ"/>
+
+    <TextView
+        android:id="@+id/pptSlideText"
+        android:layout_below="@+id/pptSlideTitle"
+        android:layout_width="fill_parent"
+        android:layout_height="250dp"
         android:layout_marginTop="10dp"
         android:layout_marginRight="10dp"
         android:layout_marginLeft="10dp"
@@ -74,7 +75,7 @@
             android:layout_marginTop="20dp"
             android:layout_marginBottom="15dp"
             android:textColor="#fff"
-            android:text="Exit"
+            android:text="Cancel"
             />
     </LinearLayout>
 

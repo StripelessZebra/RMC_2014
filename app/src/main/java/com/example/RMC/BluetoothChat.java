@@ -148,6 +148,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
     private RadioButton defaultRadioButton;
 
     ArrayList<String> receivedPPTText = new ArrayList<String>();
+    ArrayList<String> receivedPPTTitle = new ArrayList<String>();
     String pptFilePathFromPC = "";
     int pptNumberOfSlides = 0;
     int selectedSlideNumber = 0;
@@ -1236,6 +1237,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                             tv.setText("");
                             tv.setBackground(getResources().getDrawable(R.drawable.disconnected));
                             receivedPPTText.clear();
+                            receivedPPTTitle.clear();
                             pptFilePathFromPC="";
                             pptNumberOfSlides=0;
                             defaultTV.setText(R.string.not_connected);
@@ -1289,14 +1291,12 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                                 pptNumberOfSlides = Integer.parseInt(removeWords(readMessage, "pptSlideCount"));
                             }
                             else if(readMessage.contains("contains")) {
-                                if(readMessage.contains("The slide contains: ")){
-                                    receivedPPTText.add(removeWords(readMessage, "The slide contains: "));
-                                    Log.i("RECEIVED: ", "RECEIVED: " + readMessage);
-                                }
-                                else{
-                                    receivedPPTText.add(readMessage);
-                                    Log.i("RECEIVED: ", "RECEIVED: " + readMessage);
-                                }
+                                receivedPPTText.add(removeWords(readMessage, "contains"));
+                                Log.i("RECEIVED: ", "RECEIVED: " + readMessage);
+                            }
+                            else if(readMessage.contains("slideTitle")){
+                                receivedPPTTitle.add(removeWords(readMessage, "slideTitle"));
+                                Log.i("TITLE: ", "TITLE: " + readMessage);
                             }
                             else if(readMessage.equals("startOfRetrieving")){
                                 displayLoadingDialog();
@@ -1388,7 +1388,8 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
             final Dialog d = new Dialog(BluetoothChat.this);
             d.requestWindowFeature(Window.FEATURE_NO_TITLE);
             d.setContentView(R.layout.slides_layout);
-            TextView pptFileName = (TextView) d.findViewById(R.id.pptFileName);
+            d.setCanceledOnTouchOutside(false);
+            final TextView pptSlideTitle = (TextView) d.findViewById(R.id.pptSlideTitle);
             final TextView slideNumberTv = (TextView) d.findViewById(R.id.slideNumberTv);
             slideNumberTv.setText("Slide Number: " + String.valueOf(currentSlideNumber_Menu));
             SeekBar slideSeek = (SeekBar) d.findViewById(R.id.slideSeek);
@@ -1398,26 +1399,28 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
             pptSlideText.setMovementMethod(new ScrollingMovementMethod());
             Button goToSlideBtn = (Button) d.findViewById(R.id.goToSlideBtn);
             Button closeSlideBtn = (Button) d.findViewById(R.id.closeSlideBtn);
-            if(pptNumberOfSlides>0 && pptNumberOfSlides<2){
-                String textsInSlide = "";
-                for (String s : receivedPPTText)
-                {
-                    textsInSlide += s + "\r\n";
-                }
-                pptSlideText.setText(textsInSlide);
+            if(receivedPPTText.get(currentSlideNumber_Menu - 1).toString().equals("")) {
+                pptSlideText.setText("*No Notes Found.");
             }
-            else if(pptNumberOfSlides>1){
-                pptSlideText.setText(receivedPPTText.get(currentSlideNumber_Menu - 1).toString());
+            else {
+               pptSlideText.setText(receivedPPTText.get(currentSlideNumber_Menu - 1).toString());
             }
 
-            String fileNameWithPPTExtension = pptFilePathFromPC.substring(pptFilePathFromPC.lastIndexOf("\\") + 1);
+            /*String fileNameWithPPTExtension = pptFilePathFromPC.substring(pptFilePathFromPC.lastIndexOf("\\") + 1);
             if(fileNameWithPPTExtension.length()>31){
                 String shorterFileNameWithPPTExtension = fileNameWithPPTExtension.substring(0, Math.min(fileNameWithPPTExtension.length(), 30)) + "...";
-                pptFileName.setText(shorterFileNameWithPPTExtension);
+                pptSlideTitle.setText(shorterFileNameWithPPTExtension);
             }
             else if(fileNameWithPPTExtension.length()<=31){
-                pptFileName.setText(fileNameWithPPTExtension);
+                pptSlideTitle.setText(fileNameWithPPTExtension);
+            }*/
+            if(receivedPPTTitle.get(currentSlideNumber_Menu - 1).toString().equals("")) {
+                pptSlideTitle.setText("*No Title Found.");
             }
+            else{
+                pptSlideTitle.setText(receivedPPTTitle.get(currentSlideNumber_Menu - 1).toString());
+            }
+
             slideSeek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
                 @Override
@@ -1426,6 +1429,18 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                     currentSlideNumber_Menu = progress + 1;
                     slideNumberTv.setText("Slide Number: " + String.valueOf(currentSlideNumber_Menu));
                     wasUpGestureValueChanged = true;
+                    if(receivedPPTText.get(progress).toString().equals("")) {
+                        pptSlideText.setText("*No Notes Found.");
+                    }
+                    else {
+                        pptSlideText.setText(receivedPPTText.get(progress).toString());
+                    }
+                    if(receivedPPTTitle.get(progress).toString().equals("")) {
+                        pptSlideTitle.setText("*No Title Found.");
+                    }
+                    else{
+                        pptSlideTitle.setText(receivedPPTTitle.get(progress).toString());
+                    }
                 }
 
                 @Override
@@ -1435,18 +1450,14 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
 
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
-                    if(pptNumberOfSlides>1) {
-                        int indexForSlide = currentSlideNumber_Menu - 1;
-                        pptSlideText.setText(receivedPPTText.get(indexForSlide).toString());
-                    }
                 }
             });
             goToSlideBtn.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(pptNumberOfSlides>1) {
-                        sendMessage("goto " + currentSlideNumber_Menu);
-                    }
+                     sendMessage("goto " + currentSlideNumber_Menu);
+                     Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                     v.vibrate(200);
                 }
             });
 
@@ -1682,7 +1693,22 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
 
             final ArrayList <String> slideNumber= new ArrayList<String>();
             for(int i = 1; i<=pptNumberOfSlides; i++){
-                slideNumber.add(String.valueOf(i));
+                if(receivedPPTTitle.get(i-1).equals("")) {
+                    if(i<10){
+                        slideNumber.add("0"+String.valueOf(i) + " - Slide 0" + String.valueOf(i));
+                    }
+                    else{
+                        slideNumber.add(String.valueOf(i) + " - Slide " + String.valueOf(i));
+                    }
+                }
+                else{
+                    if(i<10){
+                        slideNumber.add("0"+String.valueOf(i) + " - " + receivedPPTTitle.get(i - 1).toString());
+                    }
+                    else {
+                        slideNumber.add(String.valueOf(i) + " - " + receivedPPTTitle.get(i - 1).toString());
+                    }
+                }
             }
 
             final Dialog d = new Dialog(BluetoothChat.this);
@@ -1701,7 +1727,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
 
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view,int position, long id) {
-                    selectedSlideNumber = Integer.parseInt(slideNumber.get(jumpToSlideInput.getSelectedItemPosition()));
+                    selectedSlideNumber = position + 1;
                 }
 
                 @Override

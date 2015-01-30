@@ -25,7 +25,7 @@
 
 
     <item android:id="@+id/receivedPPTSlides"
-        android:title="Slides"
+        android:title="View Notes"
         android:showAsAction="always|withText"/>
 
     <item android:id="@+id/secure_connect_scan"
