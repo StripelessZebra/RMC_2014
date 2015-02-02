@@ -30,6 +30,7 @@ import android.text.TextWatcher;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -42,6 +43,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -147,8 +149,9 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
     private RadioButton pptLaserPointer;
     private RadioButton defaultRadioButton;
 
-    ArrayList<String> receivedPPTText = new ArrayList<String>();
+    ArrayList<String> receivedPPTNotes = new ArrayList<String>();
     ArrayList<String> receivedPPTTitle = new ArrayList<String>();
+    ArrayList<String> receivedPPTText = new ArrayList<String>();
     String pptFilePathFromPC = "";
     int pptNumberOfSlides = 0;
     int selectedSlideNumber = 0;
@@ -281,10 +284,10 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                         mediaPlay.setVisibility(View.GONE);
                         toggleButtonLL.setVisibility(View.VISIBLE);
                         openMP.setVisible(false);
-                        if(receivedPPTText.size()!=0){
+                        if(receivedPPTNotes.size()!=0){
                             receivedPPTSlides.setVisible(true);
                         }
-                        else if(receivedPPTText.size()==0){
+                        else if(receivedPPTNotes.size()==0){
                             openPPT.setVisible(true);
                         }
                     } else if (programSelectionSpinner.getSelectedItem().toString().equals("Windows Media Player")) {
@@ -306,10 +309,10 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                         mediaPlay.setVisibility(View.GONE);
                         toggleButtonLL.setVisibility(View.VISIBLE);
                         openMP.setVisible(false);
-                        if(receivedPPTText.size()!=0){
+                        if(receivedPPTNotes.size()!=0){
                             receivedPPTSlides.setVisible(true);
                         }
-                        else if(receivedPPTText.size()==0){
+                        else if(receivedPPTNotes.size()==0){
                             openPPT.setVisible(true);
                         }
                     } else if (programSelectionSpinner.getSelectedItem().toString().equals("Windows Media Player")) {
@@ -1236,8 +1239,9 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                             //setStatus(R.string.title_not_connected);
                             tv.setText("");
                             tv.setBackground(getResources().getDrawable(R.drawable.disconnected));
-                            receivedPPTText.clear();
+                            receivedPPTNotes.clear();
                             receivedPPTTitle.clear();
+                            receivedPPTText.clear();
                             pptFilePathFromPC="";
                             pptNumberOfSlides=0;
                             defaultTV.setText(R.string.not_connected);
@@ -1291,8 +1295,12 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                                 pptNumberOfSlides = Integer.parseInt(removeWords(readMessage, "pptSlideCount"));
                             }
                             else if(readMessage.contains("contains")) {
-                                receivedPPTText.add(removeWords(readMessage, "contains"));
+                                receivedPPTNotes.add(removeWords(readMessage, "contains"));
                                 Log.i("RECEIVED: ", "RECEIVED: " + readMessage);
+                            }
+                            else if(readMessage.contains("contentText")){
+                                receivedPPTText.add(removeWords(readMessage, "contentText"));
+                                Log.i("Content: ", "Content: " + readMessage);
                             }
                             else if(readMessage.contains("slideTitle")){
                                 receivedPPTTitle.add(removeWords(readMessage, "slideTitle"));
@@ -1387,7 +1395,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
         if(pptNumberOfSlides!=0) {
             final Dialog d = new Dialog(BluetoothChat.this);
             d.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            d.setContentView(R.layout.slides_layout);
+            d.setContentView(R.layout.slide_content_layout);
             d.setCanceledOnTouchOutside(false);
             final TextView pptSlideTitle = (TextView) d.findViewById(R.id.pptSlideTitle);
             final TextView slideNumberTv = (TextView) d.findViewById(R.id.slideNumberTv);
@@ -1395,16 +1403,62 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
             SeekBar slideSeek = (SeekBar) d.findViewById(R.id.slideSeek);
             slideSeek.setMax(pptNumberOfSlides - 1);
             slideSeek.setProgress(currentSlideNumber_Menu-1);
-            final TextView pptSlideText = (TextView) d.findViewById(R.id.pptSlideText);
-            pptSlideText.setMovementMethod(new ScrollingMovementMethod());
+            /*final TextView pptSlideContentText = (TextView) d.findViewById(R.id.pptSlideContentText);
+            pptSlideContentText.setMovementMethod(new ScrollingMovementMethod());
+            final TextView pptSlideNotes = (TextView) d.findViewById(R.id.pptSlideNotes);
+            pptSlideNotes.setMovementMethod(new ScrollingMovementMethod());*/
             Button goToSlideBtn = (Button) d.findViewById(R.id.goToSlideBtn);
             Button closeSlideBtn = (Button) d.findViewById(R.id.closeSlideBtn);
+
+            Log.i("ABCD", "ABCD: " + receivedPPTText.size());
+
+
+
+            ExpandableListView expandableList = (ExpandableListView)d.findViewById(R.id.expandableList);
+            expandableList.setDividerHeight(2);
+            expandableList.setGroupIndicator(null);
+            expandableList.setClickable(true);
+            final ArrayList<String> parentItems = new ArrayList<String>();
+            final ArrayList<Object> childItems = new ArrayList<Object>();
+
+
+            final ExpandableAdapter adapter = new ExpandableAdapter(parentItems, childItems);
+
+            adapter.setInflater((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE), this);
+            expandableList.setAdapter(adapter);
+
+
+            parentItems.add("Content - Tap To Toggle");
+            parentItems.add("Notes - Tap To Toggle");
+
+            //Content
+            final ArrayList<String> contentChild = new ArrayList<String>();
+            contentChild.clear();
+
             if(receivedPPTText.get(currentSlideNumber_Menu - 1).toString().equals("")) {
-                pptSlideText.setText("*No Notes Found.");
+                contentChild.add("*No Content Found.");
+                childItems.add(contentChild);
             }
             else {
-               pptSlideText.setText(receivedPPTText.get(currentSlideNumber_Menu - 1).toString());
+                contentChild.add(receivedPPTText.get(currentSlideNumber_Menu - 1).toString());
+                childItems.add(contentChild);
             }
+
+            //Notes
+            final ArrayList<String> notesChild = new ArrayList<String>();
+            notesChild.clear();
+
+            if(receivedPPTNotes.get(currentSlideNumber_Menu - 1).toString().equals("")) {
+                //pptSlideNotes.setText("*No Notes Found.");
+                notesChild.add("*No Notes Found.");
+                childItems.add(notesChild);
+            }
+            else {
+                //pptSlideNotes.setText(receivedPPTNotes.get(currentSlideNumber_Menu - 1).toString());
+                notesChild.add(receivedPPTNotes.get(currentSlideNumber_Menu - 1).toString());
+                childItems.add(notesChild);
+            }
+
 
             /*String fileNameWithPPTExtension = pptFilePathFromPC.substring(pptFilePathFromPC.lastIndexOf("\\") + 1);
             if(fileNameWithPPTExtension.length()>31){
@@ -1425,15 +1479,28 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
 
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
-
+                    contentChild.clear();
+                    notesChild.clear();
                     currentSlideNumber_Menu = progress + 1;
                     slideNumberTv.setText("Slide Number: " + String.valueOf(currentSlideNumber_Menu));
                     wasUpGestureValueChanged = true;
                     if(receivedPPTText.get(progress).toString().equals("")) {
-                        pptSlideText.setText("*No Notes Found.");
+                        contentChild.add("*No Content Found.");
+                        childItems.add(contentChild);
                     }
                     else {
-                        pptSlideText.setText(receivedPPTText.get(progress).toString());
+                        contentChild.add(receivedPPTText.get(progress).toString());
+                        childItems.add(contentChild);
+                    }
+                    if(receivedPPTNotes.get(progress).toString().equals("")) {
+                        //pptSlideNotes.setText("*No Notes Found.");
+                        notesChild.add("*No Notes Found.");
+                        childItems.add(notesChild);
+                    }
+                    else {
+                        notesChild.add(receivedPPTNotes.get(progress).toString());
+                        childItems.add(notesChild);
+                        //pptSlideNotes.setText(receivedPPTNotes.get(progress).toString());
                     }
                     if(receivedPPTTitle.get(progress).toString().equals("")) {
                         pptSlideTitle.setText("*No Title Found.");
@@ -1441,6 +1508,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                     else{
                         pptSlideTitle.setText(receivedPPTTitle.get(progress).toString());
                     }
+                    adapter.notifyDataSetChanged();
                 }
 
                 @Override
@@ -1452,6 +1520,10 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                 public void onStopTrackingTouch(SeekBar seekBar) {
                 }
             });
+
+            //set Expandable list to open first parent group
+            //expandableList.expandGroup(0);
+
             goToSlideBtn.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
