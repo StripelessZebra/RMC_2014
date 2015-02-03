@@ -48,6 +48,7 @@ public class UserManual extends Activity {
         parentItems.add("Connect A Device");
         parentItems.add("Connection Status");
         parentItems.add("Program Control");
+        parentItems.add("Credits");
     }
 
     public void setChildData() {
@@ -73,6 +74,14 @@ public class UserManual extends Activity {
         child.add(getString(R.string.programSelection2));
         child.add(getString(R.string.programSelection3));
         child.add(getString(R.string.programSelection4));
+        childItems.add(child);
+
+        child = new ArrayList<String>();
+        child.add("NYP-SIT FYPJ 2014/2015 Period 4");
+        child.add("Done By:");
+        child.add("&#10157;Keith Loh - 123841N ¸¸.•*¨*•♫♪✪");
+        child.add("&#10157;Jefferson Yap - 121821E ( ͡° ͜ʖ ͡°)");
+        child.add("٩(●̮̮̃•̃)=/̵͇̿̿/'̿̿ ̿̿ ̿̿'̿'\\̵͇̿̿\\=(•̃●̮̮̃)۶ THANK YOU 눈_눈");
         childItems.add(child);
     }
 

@@ -15,9 +15,10 @@
         android:layout_marginRight="10dp"
         android:textSize="18dp"
         android:textStyle="bold|italic"
-        android:maxLines = "10"
-        android:scrollbars = "vertical"
+        android:maxLines="10"
+        android:scrollbars="vertical"
         android:textColor="#0063a8"
+        android:gravity="center"
         android:text="ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ"/>
 
     <TextView
@@ -26,7 +27,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         android:textStyle="bold|italic"
         android:textSize="16dp"
         android:text="Slide Number: "/>

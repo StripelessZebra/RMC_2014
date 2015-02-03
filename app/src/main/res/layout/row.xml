@@ -8,6 +8,6 @@
     android:padding="10dp"
     android:textColor="#fff"
     android:textSize="17dp"
-    android:textStyle="bold" 
+    android:textStyle="bold"
     android:background="#000"
     />

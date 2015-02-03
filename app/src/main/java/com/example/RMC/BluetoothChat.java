@@ -1401,6 +1401,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
             d.setContentView(R.layout.slide_content_layout);
             d.setCanceledOnTouchOutside(false);
             final TextView pptSlideTitle = (TextView) d.findViewById(R.id.pptSlideTitle);
+            pptSlideTitle.setMovementMethod(new ScrollingMovementMethod());
             final TextView slideNumberTv = (TextView) d.findViewById(R.id.slideNumberTv);
             slideNumberTv.setText("Slide Number: " + String.valueOf(currentSlideNumber_Menu));
             SeekBar slideSeek = (SeekBar) d.findViewById(R.id.slideSeek);
@@ -1431,8 +1432,8 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
             expandableList.setAdapter(adapter);
 
 
-            parentItems.add("Content - Tap To Toggle");
-            parentItems.add("Notes - Tap To Toggle");
+            parentItems.add("Content");
+            parentItems.add("Notes");
 
             //Content
             final ArrayList<String> contentChild = new ArrayList<String>();
