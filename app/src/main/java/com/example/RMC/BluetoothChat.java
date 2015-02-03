@@ -1223,11 +1223,13 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                             }
                             isOpenMPSelected = false;
                             currentSlideNumber_Menu = 1;
+                            loadingDialog.dismiss();
                             break;
                         case BluetoothChatService.STATE_CONNECTING:
                             tv.setText("");
                             tv.setBackground(getResources().getDrawable(R.drawable.connecting));
                             defaultTV.setText(R.string.title_connecting);
+                            displayLoadingDialog("connect");
                             if(hasOnCreateOptionsMenuBeenCreated =="YES") {
                                 connectBT.setVisible(false);
                                 disconnectBT.setVisible(false);
@@ -1257,6 +1259,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                             jumpToSlideBtn.setVisibility(View.GONE);
                             currentSlideNumber_Menu = 1;
                             isOpenMPSelected = false;
+                            loadingDialog.dismiss();
 
                             if(hasOnCreateOptionsMenuBeenCreated =="YES" && isDeviceConnected =="") {
                                 connectBT.setVisible(true);
@@ -1307,7 +1310,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
                                 Log.i("TITLE: ", "TITLE: " + readMessage);
                             }
                             else if(readMessage.equals("startOfRetrieving")){
-                                displayLoadingDialog();
+                                displayLoadingDialog("slides");
                             }
                             else if(readMessage.equals("endOfRetrieving")){
                                 if(pptFilePathFromPC.equals("")){
@@ -1546,12 +1549,19 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
         }
     }
 
-    public void displayLoadingDialog(){
+    public void displayLoadingDialog(String loadingType){
         loadingDialog = new Dialog(BluetoothChat.this);
         loadingDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         loadingDialog.setContentView(R.layout.loading_layout);
         ProgressBar pb = (ProgressBar)loadingDialog.findViewById(R.id.progress_bar);
         pb.setVisibility(View.VISIBLE);
+        TextView tv = (TextView) loadingDialog.findViewById(R.id.loading_message);
+        if(loadingType.equals("slides")) {
+            tv.setText("Retrieving Slides, Please Wait...");
+        }
+        else if(loadingType.equals("connect")){
+            tv.setText("Attempting To Connect...");
+        }
         loadingDialog.setCancelable(false);
         loadingDialog.setCanceledOnTouchOutside(false);
         loadingDialog.show();
