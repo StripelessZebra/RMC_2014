@@ -53,9 +53,8 @@
     <string name="disconnectedIcon">Red Icon -> Not Connected</string>
 
 
-    <string name="programSelection">There are currently 2 supported programs (Microsoft PowerPoint, Windows Media Player).
-        It is only available when the device is successfully connected.</string>
-    <string name="programSelection2">Once a program is selected, you are able to control it through buttons or motion control.</string>
+    <string name="programSelection">There are currently 2 supported programs (Microsoft PowerPoint, Windows Media Player).</string>
+    <string name="programSelection2">Upon successful connection, when a program is selected, you are able to control it through buttons or motion control.</string>
     <string name="programSelection3">Current controls for PowerPoint: Minimize, Maximize, Previous Slide, Next Slide, Toggle Blank Screen, Jump To Slide, Control of Mouse through gesture (Left Click, Right Click, Highlighter, Laser Pointer), Selection of PowerPoint, Retrieval of PowerPoint Contents.</string>
     <string name="programSelection4">Current controls for Media Player: Minimize, Maximize, Toggle Mute, Volume(-/+), Previous, Next, Stop, Play/Pause, Selection of Media(Videos/Playlists).</string>
 </resources>
