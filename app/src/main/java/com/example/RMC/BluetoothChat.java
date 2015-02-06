@@ -1526,7 +1526,7 @@ public class BluetoothChat extends Activity implements SensorEventListener, Numb
             });
 
             //set Expandable list to open first parent group
-            //expandableList.expandGroup(0);
+            expandableList.expandGroup(1);
 
             goToSlideBtn.setOnClickListener(new OnClickListener() {
                 @Override
