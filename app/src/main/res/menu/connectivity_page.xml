@@ -1,20 +1,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!--<item android:id="@+id/discoverable"
-
-        android:title="Discoverability"
-        android:orderInCategory="100"
-        android:showAsAction="always|withText" />-->
-
     <item android:id="@+id/userManual"
         android:title="User Manual"
         android:icon="@drawable/help"
         android:showAsAction="always|withText"/>
 
-    <!--<item android:id="@+id/calibrationSettings"
-        android:title="Settings"
-        android:icon="@drawable/ic_action_settings"
-        android:showAsAction="always|withText"/>-->
     <item android:id="@+id/openPPT"
         android:title="Open PowerPoint"
         android:showAsAction="always|withText"/>
@@ -22,7 +12,6 @@
     <item android:id="@+id/openMP"
         android:title="Open Playlist"
         android:showAsAction="always"/>
-
 
     <item android:id="@+id/receivedPPTSlides"
         android:title="View Notes"
@@ -35,9 +24,5 @@
     <item android:id="@+id/disconnectDevice"
         android:title="Disconnect"
         android:showAsAction="always|withText" />
-
-    <!--android:icon="@android:drawable/ic_menu_search"-->
-    <!--android:icon="@android:drawable/ic_menu_mylocation"-->
-
 
 </menu>
