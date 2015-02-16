@@ -12,18 +12,6 @@
         android:textSize="16dp"
         android:text="Go To Slide #:"/>
 
-    <!--<EditText
-        android:id="@+id/jumpToSlideInput"
-        android:layout_below="@+id/jumpToSlideTv"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
-        android:maxLength="2"
-        android:inputType="number"/>-->
-
     <Spinner
         android:id="@+id/jumpToSlideInput"
         android:layout_below="@+id/jumpToSlideTv"
@@ -64,6 +52,4 @@
             android:text="Cancel"
             />
     </LinearLayout>
-
-
 </RelativeLayout>

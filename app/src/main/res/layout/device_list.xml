@@ -6,15 +6,6 @@
     android:background="#ffffff"
     >
 
-    <!--<RelativeLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_marginTop="40px"
-        android:layout_marginLeft="40px"
-        android:layout_marginRight="40px"
-        android:layout_marginBottom="40px"
-        android:background="#80484848">-->
-
     <TextView
         android:id="@+id/ownDeviceTV"
         android:layout_width="match_parent"
@@ -34,7 +25,6 @@
         android:background="#15000000"
         />
 
-
     <TextView
         android:id="@+id/ownDevice"
         android:layout_below="@+id/ownDeviceTV"
@@ -50,7 +40,6 @@
         android:paddingTop="15dp"
         android:paddingRight="5dp"
         android:paddingBottom="15dp" />
-
 
     <TextView
         android:id="@+id/title_paired_devices"
@@ -148,15 +137,5 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
         android:layout_alignParentBottom="true" >
-        <!--<Button
-            android:id="@+id/button_scan"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="Scan Devices"
-            android:layout_marginLeft="90dp"
-            android:layout_marginRight="90dp"
-            android:background="#fff"
-            android:layout_gravity="bottom" />-->
     </RelativeLayout>
-    <!--</RelativeLayout>-->
 </RelativeLayout>

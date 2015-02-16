@@ -1,4 +1,3 @@
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -30,7 +29,6 @@
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:textStyle="bold"
-
             />
 
     </LinearLayout>
@@ -53,60 +51,3 @@
         android:text="Checking Bluetooth Settings..."/>
 
 </LinearLayout>
-
-
-    <!--<TextView
-        android:id="@+id/status"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="70dp"
-        android:textSize="22dp"
-        android:textColor="#fff"
-        android:gravity="center"
-        android:text="Loading..."/>-->
-
-    <!--<Spinner
-        android:id="@+id/spinner"
-        android:background="#fff"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />-->
-
-    <!--<Button
-        android:id="@+id/connectBtn"
-        android:layout_width="fill_parent"
-        android:layout_height="40dp"
-        android:layout_marginTop="80dp"
-        android:textSize="15dp"
-        android:layout_marginLeft="80dp"
-        android:layout_marginRight="80dp"
-        android:background="@drawable/btn_style"
-        android:text="Begin"
-        android:clickable="true"
-        />-->
-
-    <!-- <Button
-         android:id="@+id/discoverBtn"
-         android:layout_width="fill_parent"
-         android:layout_height="40dp"
-         android:layout_marginTop="80dp"
-         android:background="@drawable/btn_style"
-         android:textSize="15dp"
-         android:layout_marginLeft="80dp"
-         android:layout_marginRight="80dp"
-         android:text="Search For Devices"
-         android:clickable="true"
-         />-->
-
-    <!-- <Button
-         android:id="@+id/exitBtn"
-         android:layout_width="fill_parent"
-         android:layout_height="40dp"
-         android:layout_marginTop="10dp"
-         android:background="@drawable/btn_style"
-         android:textSize="15dp"
-         android:layout_marginLeft="80dp"
-         android:layout_marginRight="80dp"
-         android:text="Exit"
-         android:clickable="true"
-         />-->
-

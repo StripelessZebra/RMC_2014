@@ -81,14 +81,6 @@
         android:layout_marginTop="10dp"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp" />
-    <!--<NumberPicker
-        android:id="@+id/leftNumberPicker"
-        android:layout_below="@+id/leftGestureTV"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_centerHorizontal="true"/>-->
 
     <TextView
         android:id="@+id/rightGestureTV"
@@ -147,16 +139,6 @@
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp" />
 
-    <!--<NumberPicker
-        android:id="@+id/rightNumberPicker"
-        android:layout_below="@+id/rightGestureTV"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        />-->
-
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -187,6 +169,4 @@
             android:text="Cancel"
             />
     </LinearLayout>
-
-
 </RelativeLayout>
