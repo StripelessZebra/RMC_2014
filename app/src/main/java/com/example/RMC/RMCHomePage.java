@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.os.CountDownTimer;
 import android.util.Log;
-import android.view.Menu;
 import android.content.Intent;
 import android.view.View;
 import android.view.Window;
@@ -71,7 +70,7 @@ public class RMCHomePage extends Activity {
                     //mTextField.setText("done!");
                     Intent intent = new Intent(
                             RMCHomePage.this,
-                            BluetoothChat.class);
+                            ConnectivityPage.class);
                     startActivity(intent);
                     RMCHomePage.this.finish();
                 }
@@ -93,7 +92,7 @@ public class RMCHomePage extends Activity {
                     //mTextField.setText("done!");
                     Intent intent = new Intent(
                             RMCHomePage.this,
-                            BluetoothChat.class);
+                            ConnectivityPage.class);
                     startActivity(intent);
                     RMCHomePage.this.finish();
                 }
@@ -123,7 +122,7 @@ public class RMCHomePage extends Activity {
                 ///}
                 //Intent intent = new Intent(
                 //        RMCHomePage.this,
-                //        BluetoothChat.class);
+                //        ConnectivityPage.class);
                 //startActivity(intent);
             }
         });*/
@@ -147,7 +146,7 @@ public class RMCHomePage extends Activity {
 
 			Intent intent = new Intent(
 						GamePlay.this,
-						BluetoothChat.class); //
+						ConnectivityPage.class); //
 						startActivity(intent);
 
 
@@ -180,7 +179,7 @@ public class RMCHomePage extends Activity {
                         //mTextField.setText("done!");
                         Intent intent = new Intent(
                                 RMCHomePage.this,
-                                BluetoothChat.class);
+                                ConnectivityPage.class);
                         startActivity(intent);
                         RMCHomePage.this.finish();
                     }
@@ -240,7 +239,7 @@ public class RMCHomePage extends Activity {
                     case BluetoothAdapter.STATE_ON:
                         Intent mainPage = new Intent(
                                 RMCHomePage.this,
-                                BluetoothChat.class);
+                                ConnectivityPage.class);
                         startActivity(mainPage);
                         RMCHomePage.this.finish();
                         break;
