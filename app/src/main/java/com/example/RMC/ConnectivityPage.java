@@ -1,7 +1,6 @@
 package com.example.RMC;
 
 import android.annotation.TargetApi;
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -40,12 +39,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.ExpandableListView;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.NumberPicker;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
@@ -57,8 +53,6 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.os.Vibrator;
-import android.widget.ToggleButton;
-
 import java.util.ArrayList;
 
 /**
@@ -85,17 +79,8 @@ public class ConnectivityPage extends Activity implements SensorEventListener, N
     private static final int REQUEST_CONNECT_DEVICE_INSECURE = 2;
     private static final int REQUEST_ENABLE_BT = 3;
 
-    // Layout Views
-    private ListView mConversationView;
-    private EditText mOutEditText;
-    private Button mSendButton;
-
     // Name of the connected device
     private String mConnectedDeviceName = null;
-    // Array adapter for the conversation thread
-    private ArrayAdapter<String> mConversationArrayAdapter;
-    // String buffer for outgoing messages
-    private StringBuffer mOutStringBuffer;
     // Local Bluetooth adapter
     private BluetoothAdapter mBluetoothAdapter = null;
     // Member object for the chat services
@@ -105,36 +90,21 @@ public class ConnectivityPage extends Activity implements SensorEventListener, N
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
 
-    TextView tv, defaultTV, deviceDetails, upGestureTv, downGestureTv, leftGestureTv, rightGestureTv, cursorSpeedTv;
+    TextView tv, defaultTV;
     Button eraseAnnotationsBtn, leftMouseBtn, rightMouseBtn, mediaPlayIncrease , mediaPlayDecrease, jumpToSlideBtn,blankScreenBtn;
-    LinearLayout programSelectionLL, toggleButtonLL, latestDeviceInfo, highlightToggleLL, mouseButtonLL;
+    LinearLayout programSelectionLL, toggleButtonLL, highlightToggleLL, mouseButtonLL;
     RelativeLayout ppt,mediaPlay;
-    Spinner programSelectionSpinner, pptToolsSpinner;
-    CustomProgramList spinnerAdapter, pptSpinnerAdapter;
+    Spinner programSelectionSpinner;
+    CustomProgramList spinnerAdapter;
     Switch toggle;
-    ToggleButton highlightToggle, laserPointerToggle;
-    ImageView pptMinimize, pptMaximize, pptLeft, pptRight, mediaPlayMinimize, mediaPlayMaximize, mediaPlayMute, mediaPlayUnmute, mediaPlayPlay, mediaPlayStop, mediaPlayPause ,mediaPlayNext, mediaPlayPrev;
+    ImageView pptMinimize, pptMaximize, pptLeft, pptRight, mediaPlayMaximize, mediaPlayMute, mediaPlayPlay, mediaPlayStop, mediaPlayNext, mediaPlayPrev;
     SharedPreferences.Editor editor;
     String pairedDeviceAddress,hasOnCreateOptionsMenuBeenCreated,isDeviceConnected = "", isMotionControlSelected="";
     Menu settingsMenu;
-    MenuItem connectBT, disconnectBT, settingOption, userManual, receivedPPTSlides, openPPT, openMP;
-    private SeekBar upSeek = null;
-    private SeekBar downSeek = null;
-    private SeekBar leftSeek=null;
-    private SeekBar rightSeek = null;
-    private SeekBar cursorSeek = null;
+    MenuItem connectBT, disconnectBT, userManual, receivedPPTSlides, openPPT, openMP;
     Dialog loadingDialog;
-    int upValue;
-    int downValue;
-    int leftValue;
-    int rightValue;
-    int cursorValue;
     int currentSlideNumber_Menu = 1;
     boolean wasUpGestureValueChanged = false;
-    boolean wasDownGestureValueChanged = false;
-    boolean wasLeftGestureValueChanged = false;
-    boolean wasRightGestureValueChanged = false;
-    boolean wasCursorSpeedValueChanged = false;
     boolean isLaserPointerOn = false;
     boolean isHighlighterOn = false;
     boolean isOpenMPSelected = false;
@@ -160,9 +130,6 @@ public class ConnectivityPage extends Activity implements SensorEventListener, N
             R.drawable.powerpoint,
             R.drawable.media_player
     };
-
-    String[] pptTools = {"Cursor", "Highlighter", "Laser Pointer"};
-    Integer[] pptToolsImage = {R.drawable.cursor, R.drawable.highlighter, R.drawable.laser};
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -198,13 +165,9 @@ public class ConnectivityPage extends Activity implements SensorEventListener, N
                 }
             }
             else if (deviceName != null && deviceAddress != null) {
-                //deviceDetails = (TextView) findViewById(R.id.deviceDetails);
-                //deviceDetails.setText("Device Name: " + deviceName + "\nMAC Address: " + deviceAddress);
-                //latestDeviceInfo = (LinearLayout)findViewById(R.id.latestDeviceInfo);
                 BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(deviceAddress);
                 if (mChatService == null) setupChat();
                 mChatService.connect(device, true);
-
                 //Toast.makeText(getApplicationContext(),deviceName, Toast.LENGTH_SHORT).show();
                 //Toast.makeText(getApplicationContext(),deviceAddress, Toast.LENGTH_SHORT).show();
             }
@@ -218,28 +181,8 @@ public class ConnectivityPage extends Activity implements SensorEventListener, N
         // Set up the window layout
         setContentView(R.layout.connectivity_page);
 
-        ImageButton button1;
-        ImageButton button2;
-        ImageButton button3;
-        ImageButton button4;
-
         tv = (TextView) findViewById(R.id.textView1);
         defaultTV=(TextView) findViewById(R.id.defaultTextTV);
-
-        /*CustomProgramList adapter = new CustomProgramList(ConnectivityPage.this, web, imageId);
-        ListView programListView = (ListView) findViewById(R.id.programLV);
-        programListView .setAdapter(adapter);
-        programListView .setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-                Toast.makeText(ConnectivityPage.this, "Selected: " + web[position], Toast.LENGTH_SHORT).show();
-                if(web[position]=="Microsoft PowerPoint"){
-                    Intent ppt = new Intent(ConnectivityPage.this, PowerPointControls.class);
-                    startActivity(ppt);
-                }
-            }
-        });*/
 
         toggleButtonLL = (LinearLayout) findViewById(R.id.toggleButtonLL);
         toggleButtonLL.setVisibility(View.GONE);
@@ -333,69 +276,6 @@ public class ConnectivityPage extends Activity implements SensorEventListener, N
             }
         });
 
-        /*pptToolsSpinner = (Spinner) findViewById(R.id.pptToolsSpinner);
-        pptSpinnerAdapter = new CustomProgramList(this, pptTools, pptToolsImage);
-        pptSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        pptToolsSpinner.setAdapter(pptSpinnerAdapter);
-
-        pptToolsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if (pptToolsSpinner.getSelectedItem().toString().equals("Cursor")) {
-                    if(isLaserPointerOn == true) {
-                        isLaserPointerOn = false;
-                        sendMessage("LP off");
-                    }
-                    if(isHighlighterOn == true) {
-                        isHighlighterOn = false;
-                        sendMessage("HL off");
-                    }
-                    mouseButtonLL.setVisibility(View.VISIBLE);
-                    eraseAnnotationsBtn.setVisibility(View.GONE);
-                }
-                else if (pptToolsSpinner.getSelectedItem().toString().equals("Highlighter")) {
-                    if(isLaserPointerOn == true) {
-                        isLaserPointerOn = false;
-                        sendMessage("LP off");
-                    }
-                    new CountDownTimer(100, 100) {
-
-                        public void onTick(long millisUntilFinished) {
-                        }
-
-                        public void onFinish() {
-                            isHighlighterOn = true;
-                            sendMessage("HL on");
-                            mouseButtonLL.setVisibility(View.GONE);
-                            eraseAnnotationsBtn.setVisibility(View.VISIBLE);
-                        }
-                    }.start();
-                }
-                else if (pptToolsSpinner.getSelectedItem().toString().equals("Laser Pointer")) {
-                    if(isHighlighterOn == true) {
-                        isHighlighterOn = false;
-                        sendMessage("HL off");
-                    }
-                    new CountDownTimer(100, 100) {
-                        public void onTick(long millisUntilFinished) {
-                        }
-
-                        public void onFinish() {
-                            isLaserPointerOn = true;
-                            sendMessage("LP on");
-                            mouseButtonLL.setVisibility(View.GONE);
-                            eraseAnnotationsBtn.setVisibility(View.GONE);
-                        }
-                    }.start();
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });*/
-
         pptToolsRG = (RadioGroup) findViewById(R.id.pptToolsRG);
         pptCursor = (RadioButton) findViewById(R.id.pptCursor);
         Drawable cursorImg = getResources().getDrawable(R.drawable.cursor);
@@ -476,28 +356,14 @@ public class ConnectivityPage extends Activity implements SensorEventListener, N
             }
         });
 
-
-        //mediaPlayMinimize = (ImageView) findViewById(R.id.mediaPlayMinimize);
         mediaPlayMaximize = (ImageView) findViewById(R.id.mediaPlayMaximize);
         mediaPlayMute = (ImageView) findViewById(R.id.mediaPlayMute);
-        //mediaPlayUnmute = (ImageView) findViewById(R.id.mediaPlayUnmute);
         mediaPlayPlay = (ImageView) findViewById(R.id.mediaPlayPlay);
         mediaPlayStop = (ImageView) findViewById(R.id.mediaPlayStop);
-        //mediaPlayPause = (ImageView) findViewById(R.id.mediaPlayPause);
         mediaPlayNext = (ImageView) findViewById(R.id.mediaPlayNext);
         mediaPlayPrev = (ImageView) findViewById(R.id.mediaPlayPrev);
         mediaPlayIncrease = (Button) findViewById(R.id.mediaPlayIncrease);
         mediaPlayDecrease = (Button) findViewById(R.id.mediaPlayDecrease);
-
-        /*mediaPlayMinimize.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String message ="mp min";
-                sendMessage(message);
-                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                v.vibrate(200);
-            }
-        });*/
 
         mediaPlayMaximize.setOnClickListener(new OnClickListener() {
             @Override
@@ -519,16 +385,6 @@ public class ConnectivityPage extends Activity implements SensorEventListener, N
             }
         });
 
-        /*mediaPlayUnmute.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String message ="mp unmt";
-                sendMessage(message);
-                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                v.vibrate(200);
-            }
-        });*/
-
         mediaPlayPlay.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -548,16 +404,6 @@ public class ConnectivityPage extends Activity implements SensorEventListener, N
                 v.vibrate(200);
             }
         });
-
-        /*mediaPlayPause.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String message ="mp paus";
-                sendMessage(message);
-                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                v.vibrate(200);
-            }
-        });*/
 
         mediaPlayNext.setOnClickListener(new OnClickListener() {
             @Override
@@ -609,27 +455,20 @@ public class ConnectivityPage extends Activity implements SensorEventListener, N
                     isMotionControlSelected="YES";
                     highlightToggleLL.setVisibility(View.VISIBLE);
                     mouseButtonLL.setVisibility(View.VISIBLE);
-                    //eraseAnnotationsBtn.setVisibility(View.VISIBLE);
                     pptToolsRG.check(R.id.pptCursor);
                     sendMessage("show cr");
-                    //pptToolsSpinner.setSelection(0);
                 } else {
                     // The toggle is disabled
-
                     pptCursor.setChecked(true);
                     pptHighlighter.setChecked(false);
                     pptLaserPointer.setChecked(false);
-
                     highlightToggleLL.setVisibility(View.GONE);
-                    //highlightToggle.setChecked(false);
-                    //laserPointerToggle.setChecked(false);
                     mouseButtonLL.setVisibility(View.GONE);
                     eraseAnnotationsBtn.setVisibility(View.GONE);
                     new CountDownTimer(100, 100) {
-
                         public void onTick(long millisUntilFinished) {
-                        }
 
+                        }
                         public void onFinish() {
                             if(isLaserPointerOn == true) {
                                 isLaserPointerOn = false;
@@ -687,7 +526,6 @@ public class ConnectivityPage extends Activity implements SensorEventListener, N
         });
     }
 
-
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
@@ -706,7 +544,6 @@ public class ConnectivityPage extends Activity implements SensorEventListener, N
         int leftGestureValueSensitivity = prefs.getInt("leftGestureValue", 2);
         int rightGestureValueSensitivity = prefs.getInt("rightGestureValue", 2);
         String rightGestureValueSensitivityConverted = "-"+rightGestureValueSensitivity;
-        String cursorSeekValue = "0" + String.valueOf(prefs.getInt("cursorSeekValue", 3));
 
         if(isMotionControlSelected=="YES") {
 
@@ -714,8 +551,6 @@ public class ConnectivityPage extends Activity implements SensorEventListener, N
                 @Override
                 public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
                     defaultRadioButton = (RadioButton) findViewById(checkedId);
-
-                    //Toast.makeText(ConnectivityPage.this,pptCursor.getText(), Toast.LENGTH_SHORT).show();
                     if (defaultRadioButton.getText().toString().equals("Cursor")) {
                         if(isLaserPointerOn == true) {
                             isLaserPointerOn = false;
@@ -736,10 +571,9 @@ public class ConnectivityPage extends Activity implements SensorEventListener, N
                             sendMessage("LP off");
                         }
                         new CountDownTimer(100, 100) {
-
                             public void onTick(long millisUntilFinished) {
-                            }
 
+                            }
                             public void onFinish() {
                                 isHighlighterOn = true;
                                 sendMessage("HL on");
@@ -757,8 +591,8 @@ public class ConnectivityPage extends Activity implements SensorEventListener, N
                         }
                         new CountDownTimer(100, 100) {
                             public void onTick(long millisUntilFinished) {
-                            }
 
+                            }
                             public void onFinish() {
                                 isLaserPointerOn = true;
                                 sendMessage("LP on");
@@ -773,136 +607,67 @@ public class ConnectivityPage extends Activity implements SensorEventListener, N
                 }
             });
 
-                /*highlightToggle = (ToggleButton) findViewById(R.id.highlightToggleButton);
-                laserPointerToggle = (ToggleButton) findViewById(R.id.laserPointerToggleButton);
+            //Left
+            if (Math.round(x) >= leftGestureValueSensitivity) {
+                //Log.i("ACCELEROMETER X: ", "LEFT " + String.valueOf(x));
+                //String message = "ppt pre";
+                String accValue = "";
+                if(Math.round(x)<10){
+                    accValue = "0" + String.valueOf(Math.round(x)-1);
+                }
+                else if(Math.round(x)>=10){
+                    accValue = String.valueOf(Math.round(x)-1);
+                }
 
-                highlightToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        if (isChecked) {
-                            // The toggle is enabled
-                            String message = "HL on";
-                            sendMessage(message);
-                            laserPointerToggle.setChecked(false);
-                            laserPointerToggle.setVisibility(View.GONE);
-                            mouseButtonLL.setVisibility(View.GONE);
-                        } else {
-                            String message = "HL off";
-                            sendMessage(message);
-                            laserPointerToggle.setVisibility(View.VISIBLE);
-                            mouseButtonLL.setVisibility(View.VISIBLE);
-                        }
-                    }
-                });
-
-                laserPointerToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        if (isChecked) {
-                            // The toggle is enabled
-                            String message = "LP on";
-                            sendMessage(message);
-                            highlightToggle.setChecked(false);
-                            highlightToggle.setVisibility(View.GONE);
-                            eraseAnnotationsBtn.setVisibility(View.GONE);
-                            mouseButtonLL.setVisibility(View.GONE);
-                        } else {
-                            String message = "LP off";
-                            sendMessage(message);
-                            highlightToggle.setVisibility(View.VISIBLE);
-                            eraseAnnotationsBtn.setVisibility(View.VISIBLE);
-                            mouseButtonLL.setVisibility(View.VISIBLE);
-                        }
-                    }
-                });*/
-                //Left
-                if (Math.round(x) >= leftGestureValueSensitivity) {
-                    //Log.i("ACCELEROMETER X: ", "LEFT " + String.valueOf(x));
-                    //String message = "ppt pre";
-                    String accValue = "";
-                    if(Math.round(x)<10){
-                        accValue = "0" + String.valueOf(Math.round(x)-1);
-                    }
-                    else if(Math.round(x)>=10){
-                        accValue = String.valueOf(Math.round(x)-1);
-                    }
-
-                    //String message = "aLt  " + cursorSeekValue;
-                    String message = "aLt  " + accValue;
-                    sendMessage(message);
+                //String message = "aLt  " + cursorSeekValue;
+                String message = "aLt  " + accValue;
+                sendMessage(message);
+            }
+            //Right
+            else if (Math.round(x) <= Integer.parseInt(rightGestureValueSensitivityConverted)) {
+                //Log.i("ACCELEROMETER X: ", "RIGHT" + String.valueOf(x));
+                //String message = "ppt nex";
+                String accValue = "";
+                if(Math.round(Math.abs(x))<10){
+                    accValue = "0" + String.valueOf(Math.round(Math.abs(x))-1);
                 }
-                //Right
-                else if (Math.round(x) <= Integer.parseInt(rightGestureValueSensitivityConverted)) {
-                    //Log.i("ACCELEROMETER X: ", "RIGHT" + String.valueOf(x));
-                    //String message = "ppt nex";
-                    String accValue = "";
-                    if(Math.round(Math.abs(x))<10){
-                        accValue = "0" + String.valueOf(Math.round(Math.abs(x))-1);
-                    }
-                    else if(Math.round(Math.abs(x))>=10){
-                        accValue = String.valueOf(Math.round(Math.abs(x))-1);
-                    }
-                    //String message = "aRt  " + cursorSeekValue;
-                    String message = "aRt  " + accValue;
-                    sendMessage(message);
+                else if(Math.round(Math.abs(x))>=10){
+                    accValue = String.valueOf(Math.round(Math.abs(x))-1);
                 }
-                //UP
-                if (Math.round(y) >= upGestureValueSensitivity) {
-                    //Log.i("ACCELEROMETER Y: ", "UP " + String.valueOf(y));
-                    String accValue = "";
-                    if(Math.round(y)<10){
-                        accValue = "0" + String.valueOf(Math.round(y)-1);
-                    }
-                    else if(Math.round(y)>=10){
-                        accValue = String.valueOf(Math.round(y)-1);
-                    }
-                    //String message = "aUp  " + cursorSeekValue;
-                    String message = "aUp  " + accValue;
-                    sendMessage(message);
+                //String message = "aRt  " + cursorSeekValue;
+                String message = "aRt  " + accValue;
+                sendMessage(message);
+            }
+            //UP
+            if (Math.round(y) >= upGestureValueSensitivity) {
+                //Log.i("ACCELEROMETER Y: ", "UP " + String.valueOf(y));
+                String accValue = "";
+                if(Math.round(y)<10){
+                    accValue = "0" + String.valueOf(Math.round(y)-1);
                 }
-                //Down
-                else if (Math.round(y) <= Integer.parseInt(downGestureValueSensitivityConverted)) {
-                    //Log.i("ACCELEROMETER Y: ", "DOWN " +String.valueOf(y));
-                    String accValue = "";
-                    if(Math.round(Math.abs(y))<10){
-                        accValue = "0" + String.valueOf(Math.round(Math.abs(y))-1);
-                    }
-                    else if(Math.round(Math.abs(y))>=10){
-                        accValue = String.valueOf(Math.round(Math.abs(y))-1);
-                    }
-                    //String message = "aDn  " + cursorSeekValue;
-                    String message = "aDn  " + accValue;
-                    sendMessage(message);
+                else if(Math.round(y)>=10){
+                    accValue = String.valueOf(Math.round(y)-1);
                 }
-                /*//Left and Up
-                if ((Math.round(x) >= leftGestureValueSensitivity) && (Math.round(y) >= upGestureValueSensitivity)) {
-                    Log.i("ACCELEROMETER X: ", "LEFTUP " + String.valueOf(x));
-                    String message = "aLU  " + cursorSeekValue;
-                    sendMessage(message);
+                //String message = "aUp  " + cursorSeekValue;
+                String message = "aUp  " + accValue;
+                sendMessage(message);
+            }
+            //Down
+            else if (Math.round(y) <= Integer.parseInt(downGestureValueSensitivityConverted)) {
+                //Log.i("ACCELEROMETER Y: ", "DOWN " +String.valueOf(y));
+                String accValue = "";
+                if(Math.round(Math.abs(y))<10){
+                    accValue = "0" + String.valueOf(Math.round(Math.abs(y))-1);
                 }
-                //Right and Up
-                if (Math.round(x) <= Integer.parseInt(rightGestureValueSensitivityConverted) && (Math.round(y) >= upGestureValueSensitivity)) {
-                    Log.i("ACCELEROMETER X: ", "RIGHTUP " + String.valueOf(x));
-                    String message = "aRU  " + cursorSeekValue;
-                    sendMessage(message);
+                else if(Math.round(Math.abs(y))>=10){
+                    accValue = String.valueOf(Math.round(Math.abs(y))-1);
                 }
-                //Left and Down
-                if ((Math.round(x) <= Integer.parseInt(rightGestureValueSensitivityConverted)) && (Math.round(y) <= Integer.parseInt(downGestureValueSensitivityConverted))) {
-                    Log.i("ACCELEROMETER X: ", "LEFTDOWN " + String.valueOf(x));
-                    String message = "aLD  " + cursorSeekValue;
-                    sendMessage(message);
-                }
-                //Right and Down
-                if ((Math.round(x) <= Integer.parseInt(rightGestureValueSensitivityConverted)) && (Math.round(y) <= Integer.parseInt(downGestureValueSensitivityConverted))) {
-                    Log.i("ACCELEROMETER X: ", "RIGHTDOWN " + String.valueOf(x));
-                    String message = "aRD  " + cursorSeekValue;
-                    sendMessage(message);
-                }*/
+                //String message = "aDn  " + cursorSeekValue;
+                String message = "aDn  " + accValue;
+                sendMessage(message);
+            }
             }
     }
-
-    private AdapterView.OnItemClickListener programClickListener = new AdapterView.OnItemClickListener() {
-        public void onItemClick(AdapterView<?> av, View v, int arg2, long arg3) {
-        }
-    };
 
     @Override
     public void onStart() {
@@ -974,16 +739,6 @@ public class ConnectivityPage extends Activity implements SensorEventListener, N
         if(D) Log.e(TAG, "--- ON DESTROY ---");
     }
 
-    private void ensureDiscoverable() {
-        if(D) Log.d(TAG, "ensure discoverable");
-        if (mBluetoothAdapter.getScanMode() !=
-                BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
-            Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-            discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-            startActivity(discoverableIntent);
-        }
-    }
-
     /**
      * Sends a message.
      * @param message  A string of text to send.
@@ -999,9 +754,6 @@ public class ConnectivityPage extends Activity implements SensorEventListener, N
             // Get the message bytes and tell the ConnectivityPageService to write
             byte[] send = message.getBytes();
             mChatService.write(send);
-            // Reset out string buffer to zero and clear the edit text field
-            //mOutStringBuffer.setLength(0);
-            //mOutEditText.setText(mOutStringBuffer);
         }
     }
 
@@ -1019,18 +771,6 @@ public class ConnectivityPage extends Activity implements SensorEventListener, N
                 }
             };
 
-    private final void setStatus(int resId) {
-        final ActionBar actionBar = getActionBar();
-        //actionBar.setSubtitle(resId);
-        tv.setText(resId);
-    }
-
-    private final void setStatus(CharSequence subTitle) {
-        final ActionBar actionBar = getActionBar();
-        //actionBar.setSubtitle(subTitle);
-        tv.setText(subTitle);
-    }
-
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(D) Log.d(TAG, "onActivityResult " + resultCode);
         switch (requestCode) {
@@ -1038,8 +778,6 @@ public class ConnectivityPage extends Activity implements SensorEventListener, N
                 // When DeviceListActivity returns with a device to connect
                 if (resultCode == Activity.RESULT_OK) {
                     connectDevice(data, true);
-
-
                 }
                 break;
             case REQUEST_CONNECT_DEVICE_INSECURE:
@@ -1080,8 +818,6 @@ public class ConnectivityPage extends Activity implements SensorEventListener, N
         inflater.inflate(R.menu.connectivity_page, menu);
         connectBT = settingsMenu.findItem(R.id.secure_connect_scan);
         disconnectBT = settingsMenu.findItem(R.id.disconnectDevice);
-        //settingOption = settingsMenu.findItem(R.id.calibrationSettings);
-        //settingOption.setVisible(false);
         openPPT = settingsMenu.findItem(R.id.openPPT);
         openPPT.setVisible(false);
         openMP = settingsMenu.findItem(R.id.openMP);
@@ -1129,37 +865,22 @@ public class ConnectivityPage extends Activity implements SensorEventListener, N
                 mChatService.stop();
                 connectBT.setVisible(true);
                 disconnectBT.setVisible(false);
-                //BluetoothAdapter.getDefaultAdapter().disable();
-                //BluetoothAdapter.getDefaultAdapter().enable();
                 return true;
             case R.id.userManual:
                 Intent userManual = new Intent(ConnectivityPage.this, UserManual.class);
                 startActivity(userManual);
                 return true;
-
-            /*case R.id.calibrationSettings:
-                displayDialog();
-                return true;*/
-
             case R.id.openMP:
                 openMPPlaylist();
                 return true;
 
             case R.id.openPPT:
-                openPPTOnceConnected();
+                openPPTFile();
                 return true;
 
             case R.id.receivedPPTSlides:
                 displayPPTSlides();
                 return true;
-        /*case R.id.insecure_connect_scan:
-            // Launch the DeviceListActivity to see devices and do scan
-            serverIntent = new Intent(this, DeviceListActivity.class);
-            startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_INSECURE);
-            return true;*/
-            //case R.id.discoverable:
-
-            //    return true;
         }
         return false;
     }
@@ -1174,13 +895,11 @@ public class ConnectivityPage extends Activity implements SensorEventListener, N
                     if(D) Log.i(TAG, "MESSAGE_STATE_CHANGE: " + msg.arg1);
                     switch (msg.arg1) {
                         case ConnectivityPageService.STATE_CONNECTED:
-                            //setStatus(getString(R.string.title_connected_to, mConnectedDeviceName));
                             tv.setText("");
                             tv.setBackground(getResources().getDrawable(R.drawable.connected));
                             Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                             v.vibrate(400);
                             //Toast.makeText(getApplicationContext(),"Pairing successful", Toast.LENGTH_SHORT).show();
-                            //mConversationArrayAdapter.clear();
                             if(mConnectedDeviceName!=null && pairedDeviceAddress != null) {
                                 editor.putString("deviceName", mConnectedDeviceName);
                                 editor.putString("deviceAddress", pairedDeviceAddress);
@@ -1191,12 +910,10 @@ public class ConnectivityPage extends Activity implements SensorEventListener, N
                             isDeviceConnected = "YES";
                             programSelectionLL.setVisibility(View.VISIBLE);
                             toggleButtonLL.setVisibility(View.VISIBLE);
-                            //defaultTV.setVisibility(View.GONE);
                             defaultTV.setText("Connected to: " + mConnectedDeviceName + ".");
                             if(hasOnCreateOptionsMenuBeenCreated =="YES" && isDeviceConnected=="YES") {
                                 connectBT.setVisible(false);
                                 disconnectBT.setVisible(true);
-                                //settingOption.setVisible(true);
                                 userManual.setVisible(false);
                             }
                             if(isMotionControlSelected!="YES"){
@@ -1234,7 +951,6 @@ public class ConnectivityPage extends Activity implements SensorEventListener, N
                             break;
                         case ConnectivityPageService.STATE_LISTEN:
                         case ConnectivityPageService.STATE_NONE:
-                            //setStatus(R.string.title_not_connected);
                             tv.setText("");
                             tv.setBackground(getResources().getDrawable(R.drawable.disconnected));
                             receivedPPTNotes.clear();
@@ -1243,7 +959,6 @@ public class ConnectivityPage extends Activity implements SensorEventListener, N
                             pptFilePathFromPC="";
                             pptNumberOfSlides=0;
                             defaultTV.setText(R.string.not_connected);
-                            //defaultTV.setVisibility(View.VISIBLE);
                             programSelectionLL.setVisibility(View.GONE);
                             ppt.setVisibility(View.GONE);
                             mediaPlay.setVisibility(View.GONE);
@@ -1256,11 +971,9 @@ public class ConnectivityPage extends Activity implements SensorEventListener, N
                             currentSlideNumber_Menu = 1;
                             isOpenMPSelected = false;
                             loadingDialog.dismiss();
-
                             if(hasOnCreateOptionsMenuBeenCreated =="YES" && isDeviceConnected =="") {
                                 connectBT.setVisible(true);
                                 disconnectBT.setVisible(false);
-                                //settingOption.setVisible(false);
                                 openMP.setVisible(false);
                                 openPPT.setVisible(false);
                                 receivedPPTSlides.setVisible(false);
@@ -1273,7 +986,6 @@ public class ConnectivityPage extends Activity implements SensorEventListener, N
                     byte[] writeBuf = (byte[]) msg.obj;
                     // construct a string from the buffer
                     String writeMessage = new String(writeBuf);
-                    //mConversationArrayAdapter.add("Me:  " + writeMessage);
                     //Toast.makeText(getApplicationContext(),writeMessage, Toast.LENGTH_SHORT).show();
                     break;
                 case MESSAGE_READ:
@@ -1281,10 +993,9 @@ public class ConnectivityPage extends Activity implements SensorEventListener, N
                     // construct a string from the valid bytes in the buffer
                     final String readMessage = new String(readBuf, 0, msg.arg1);
                     new CountDownTimer(100, 100) {
-
                         public void onTick(long millisUntilFinished) {
-                        }
 
+                        }
                         public void onFinish() {
                             //Toast.makeText(getApplicationContext(),readMessage,Toast.LENGTH_SHORT).show();
                             if(readMessage.contains("pptFilePath")){
@@ -1336,19 +1047,14 @@ public class ConnectivityPage extends Activity implements SensorEventListener, N
                             }
                         }
                     }.start();
-                    //mConversationArrayAdapter.add(mConnectedDeviceName+":  " + readMessage);
-
                     break;
                 case MESSAGE_DEVICE_NAME:
                     // save the connected device's name
                     mConnectedDeviceName = msg.getData().getString(DEVICE_NAME);
-                    //Toast.makeText(getApplicationContext(), "Connected to "
-                    //        + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
-
+                    //Toast.makeText(getApplicationContext(), "Connected to " + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
                     break;
                 case MESSAGE_TOAST:
-                    //Toast.makeText(getApplicationContext(), msg.getData().getString(TOAST),
-                    //        Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(), msg.getData().getString(TOAST), Toast.LENGTH_SHORT).show();
                     break;
             }
         }
@@ -1381,9 +1087,7 @@ public class ConnectivityPage extends Activity implements SensorEventListener, N
 
     @Override
     public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-
         Log.i("value is",""+newVal);
-
     }
 
     public static String removeWords(String word ,String remove) {
@@ -1403,38 +1107,23 @@ public class ConnectivityPage extends Activity implements SensorEventListener, N
             SeekBar slideSeek = (SeekBar) d.findViewById(R.id.slideSeek);
             slideSeek.setMax(pptNumberOfSlides - 1);
             slideSeek.setProgress(currentSlideNumber_Menu-1);
-            /*final TextView pptSlideContentText = (TextView) d.findViewById(R.id.pptSlideContentText);
-            pptSlideContentText.setMovementMethod(new ScrollingMovementMethod());
-            final TextView pptSlideNotes = (TextView) d.findViewById(R.id.pptSlideNotes);
-            pptSlideNotes.setMovementMethod(new ScrollingMovementMethod());*/
             Button goToSlideBtn = (Button) d.findViewById(R.id.goToSlideBtn);
             Button closeSlideBtn = (Button) d.findViewById(R.id.closeSlideBtn);
-
-            Log.i("ABCD", "ABCD: " + receivedPPTText.size());
-
-
-
+            Log.i(TAG, TAG + ": " + receivedPPTText.size());
             ExpandableListView expandableList = (ExpandableListView)d.findViewById(R.id.expandableList);
             expandableList.setDividerHeight(2);
             expandableList.setGroupIndicator(null);
             expandableList.setClickable(true);
             final ArrayList<String> parentItems = new ArrayList<String>();
             final ArrayList<Object> childItems = new ArrayList<Object>();
-
-
             final ExpandableAdapter adapter = new ExpandableAdapter(parentItems, childItems);
-
             adapter.setInflater((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE), this);
             expandableList.setAdapter(adapter);
-
-
             parentItems.add("Content");
             parentItems.add("Notes");
-
             //Content
             final ArrayList<String> contentChild = new ArrayList<String>();
             contentChild.clear();
-
             if(receivedPPTText.get(currentSlideNumber_Menu - 1).toString().equals("")) {
                 contentChild.add("*No Content Found.");
                 childItems.add(contentChild);
@@ -1443,40 +1132,24 @@ public class ConnectivityPage extends Activity implements SensorEventListener, N
                 contentChild.add(receivedPPTText.get(currentSlideNumber_Menu - 1).toString());
                 childItems.add(contentChild);
             }
-
             //Notes
             final ArrayList<String> notesChild = new ArrayList<String>();
             notesChild.clear();
-
             if(receivedPPTNotes.get(currentSlideNumber_Menu - 1).toString().equals("")) {
-                //pptSlideNotes.setText("*No Notes Found.");
                 notesChild.add("*No Notes Found.");
                 childItems.add(notesChild);
             }
             else {
-                //pptSlideNotes.setText(receivedPPTNotes.get(currentSlideNumber_Menu - 1).toString());
                 notesChild.add(receivedPPTNotes.get(currentSlideNumber_Menu - 1).toString());
                 childItems.add(notesChild);
             }
-
-
-            /*String fileNameWithPPTExtension = pptFilePathFromPC.substring(pptFilePathFromPC.lastIndexOf("\\") + 1);
-            if(fileNameWithPPTExtension.length()>31){
-                String shorterFileNameWithPPTExtension = fileNameWithPPTExtension.substring(0, Math.min(fileNameWithPPTExtension.length(), 30)) + "...";
-                pptSlideTitle.setText(shorterFileNameWithPPTExtension);
-            }
-            else if(fileNameWithPPTExtension.length()<=31){
-                pptSlideTitle.setText(fileNameWithPPTExtension);
-            }*/
             if(receivedPPTTitle.get(currentSlideNumber_Menu - 1).toString().equals("")) {
                 pptSlideTitle.setText("*No Title Found.");
             }
             else{
                 pptSlideTitle.setText(receivedPPTTitle.get(currentSlideNumber_Menu - 1).toString());
             }
-
             slideSeek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
                     contentChild.clear();
@@ -1493,14 +1166,12 @@ public class ConnectivityPage extends Activity implements SensorEventListener, N
                         childItems.add(contentChild);
                     }
                     if(receivedPPTNotes.get(progress).toString().equals("")) {
-                        //pptSlideNotes.setText("*No Notes Found.");
                         notesChild.add("*No Notes Found.");
                         childItems.add(notesChild);
                     }
                     else {
                         notesChild.add(receivedPPTNotes.get(progress).toString());
                         childItems.add(notesChild);
-                        //pptSlideNotes.setText(receivedPPTNotes.get(progress).toString());
                     }
                     if(receivedPPTTitle.get(progress).toString().equals("")) {
                         pptSlideTitle.setText("*No Title Found.");
@@ -1510,20 +1181,16 @@ public class ConnectivityPage extends Activity implements SensorEventListener, N
                     }
                     adapter.notifyDataSetChanged();
                 }
-
                 @Override
                 public void onStartTrackingTouch(SeekBar seekBar) {
 
                 }
-
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
                 }
             });
-
             //set Expandable list to open first parent group
             expandableList.expandGroup(1);
-
             goToSlideBtn.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -1532,7 +1199,6 @@ public class ConnectivityPage extends Activity implements SensorEventListener, N
                      v.vibrate(200);
                 }
             });
-
             closeSlideBtn.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -1542,7 +1208,7 @@ public class ConnectivityPage extends Activity implements SensorEventListener, N
             d.show();
         }
         else{
-            //sendMessage("PPTmenu");
+
         }
     }
 
@@ -1564,212 +1230,10 @@ public class ConnectivityPage extends Activity implements SensorEventListener, N
         loadingDialog.show();
     }
 
-    public void displayDialog()
-    {
-
-        final Dialog d = new Dialog(ConnectivityPage.this);
-        //d.setTitle("Motion Control Calibration");
-        d.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        d.setContentView(R.layout.settings);
-        Button saveSettings = (Button) d.findViewById(R.id.saveSettings);
-        Button cancelSettings = (Button) d.findViewById(R.id.cancelSettings);
-        SharedPreferences prefs = getSharedPreferences("RMCSP", MODE_PRIVATE);
-        upSeek = (SeekBar) d.findViewById(R.id.upSeek);
-        downSeek = (SeekBar) d.findViewById(R.id.downSeek);
-        leftSeek = (SeekBar) d.findViewById(R.id.leftSeek);
-        rightSeek = (SeekBar) d.findViewById(R.id.rightSeek);
-        cursorSeek = (SeekBar) d.findViewById(R.id.cursorSeek);
-        upGestureTv = (TextView) d.findViewById(R.id.upGestureTV);
-        downGestureTv = (TextView) d.findViewById(R.id.downGestureTV);
-        leftGestureTv = (TextView) d.findViewById(R.id.leftGestureTV);
-        rightGestureTv = (TextView) d.findViewById(R.id.rightGestureTV);
-        cursorSpeedTv = (TextView) d.findViewById(R.id.cursorSpeedTV);
-
-        upGestureTv.setText("Upward Gesture Sensitivity: " + String.valueOf(prefs.getInt("upGestureValue", 2)));
-        int upSeekValue = prefs.getInt("upGestureValue", 2)-1;
-        upSeek.setProgress(upSeekValue);
-        downGestureTv.setText("Downward Gesture Sensitivity: " + String.valueOf(prefs.getInt("downGestureValue", 2)));
-        int downSeekValue = prefs.getInt("downGestureValue", 2)-1;
-        downSeek.setProgress(downSeekValue);
-        leftGestureTv.setText("Left Gesture Sensitivity: " + String.valueOf(prefs.getInt("leftGestureValue", 2)));
-        int leftSeekValue = prefs.getInt("leftGestureValue", 2)-1;
-        leftSeek.setProgress(leftSeekValue);
-        rightGestureTv.setText("Right Gesture Sensitivity: " + String.valueOf(prefs.getInt("rightGestureValue", 2)));
-        int rightSeekValue = prefs.getInt("rightGestureValue", 2)-1;
-        rightSeek.setProgress(rightSeekValue);
-        cursorSpeedTv.setText("Speed Of Cursor: " + String.valueOf(prefs.getInt("cursorSeekValue", 3)));
-        int cursorSpeedValue = prefs.getInt("cursorSeekValue", 3)-1;
-        cursorSeek.setProgress(cursorSpeedValue);
-
-        upSeek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
-
-                upValue = progress + 1;
-                upGestureTv.setText("Upward Gesture Sensitivity: " + String.valueOf(upValue));
-                wasUpGestureValueChanged = true;
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-
-        downSeek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
-
-                downValue = progress + 1;
-                downGestureTv.setText("Downward Gesture Sensitivity: " + String.valueOf(downValue));
-                wasDownGestureValueChanged = true;
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-
-
-        leftSeek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
-
-                leftValue = progress + 1;
-                leftGestureTv.setText("Left Gesture Sensitivity: " + String.valueOf(leftValue));
-                wasLeftGestureValueChanged = true;
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-
-        rightSeek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
-                rightValue = progress + 1;
-                rightGestureTv.setText("Right Gesture Sensitivity: " + String.valueOf(rightValue));
-                wasRightGestureValueChanged = true;
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-
-        cursorSeek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
-                cursorValue = progress + 1;
-                cursorSpeedTv.setText("Speed Of Cursor: " + String.valueOf(cursorValue));
-                wasCursorSpeedValueChanged = true;
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-        /*final NumberPicker leftNP = (NumberPicker) d.findViewById(R.id.leftNumberPicker);
-        leftNP.setMaxValue(10);
-        leftNP.setMinValue(1);
-        leftNP.setValue(prefs.getInt("leftGestureValue", 9));
-        leftNP.setWrapSelectorWheel(false);
-        leftNP.setOnValueChangedListener(this);
-        final NumberPicker rightNP = (NumberPicker) d.findViewById(R.id.rightNumberPicker);
-        rightNP.setMaxValue(10);
-        rightNP.setMinValue(1);
-        rightNP.setValue(prefs.getInt("rightGestureValue", 9));
-        rightNP.setWrapSelectorWheel(false);
-        rightNP.setOnValueChangedListener(this);*/
-
-        saveSettings.setOnClickListener(new OnClickListener()
-        {
-            @Override
-            public void onClick(View v) {
-                // dismiss the dialog
-                if(wasUpGestureValueChanged==true){
-                    editor.putInt("upGestureValue", upValue);
-                }
-                if(wasDownGestureValueChanged==true){
-                    editor.putInt("downGestureValue", downValue);
-                }
-                if(wasLeftGestureValueChanged==true) {
-                    editor.putInt("leftGestureValue", leftValue);
-                }
-                if(wasRightGestureValueChanged==true) {
-                    editor.putInt("rightGestureValue", rightValue);
-                }
-                if(wasCursorSpeedValueChanged==true){
-                    editor.putInt("cursorSeekValue", cursorValue);
-                }
-                wasUpGestureValueChanged = false;
-                wasDownGestureValueChanged = false;
-                wasRightGestureValueChanged = false;
-                wasLeftGestureValueChanged = false;
-                wasCursorSpeedValueChanged = false;
-                editor.commit();
-                d.dismiss();
-            }
-        });
-        cancelSettings.setOnClickListener(new OnClickListener()
-        {
-            @Override
-            public void onClick(View v) {
-                // dismiss the dialog
-                wasUpGestureValueChanged = false;
-                wasDownGestureValueChanged = false;
-                wasRightGestureValueChanged = false;
-                wasLeftGestureValueChanged = false;
-                wasCursorSpeedValueChanged = false;
-                d.dismiss();
-            }
-        });
-        d.show();
-
-
-    }
-
     public void jumpToSlideDialog()
     {
-
         if(pptNumberOfSlides!=0) {
-            Log.i("MENU PRESSED", "NUMBER OF SLIDES: " + pptNumberOfSlides);
-
+            Log.i(TAG, "NUMBER OF SLIDES: " + pptNumberOfSlides);
             final ArrayList <String> slideNumber= new ArrayList<String>();
             for(int i = 1; i<=pptNumberOfSlides; i++){
                 if(receivedPPTTitle.get(i-1).equals("")) {
@@ -1789,55 +1253,24 @@ public class ConnectivityPage extends Activity implements SensorEventListener, N
                     }
                 }
             }
-
             final Dialog d = new Dialog(ConnectivityPage.this);
             d.requestWindowFeature(Window.FEATURE_NO_TITLE);
             d.setContentView(R.layout.jump_to_slide);
-            //final EditText jumpToSlideInput = (EditText) d.findViewById(R.id.jumpToSlideInput);
             final Spinner jumpToSlideInput = (Spinner) d.findViewById(R.id.jumpToSlideInput);
             Button goToSlide = (Button) d.findViewById(R.id.goToSlide);
             Button cancelJump = (Button) d.findViewById(R.id.cancelJump);
-
-            ArrayAdapter<String> adapter= new ArrayAdapter<String>(this,android.
-                    R.layout.simple_spinner_dropdown_item ,slideNumber);
+            ArrayAdapter<String> adapter= new ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item ,slideNumber);
             jumpToSlideInput.setAdapter(adapter);
-
             jumpToSlideInput.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view,int position, long id) {
                     selectedSlideNumber = position + 1;
                 }
-
                 @Override
                 public void onNothingSelected(AdapterView<?> parent) {
                     // TODO Auto-generated method stub
                 }
             });
-
-
-            /*jumpToSlideInput.addTextChangedListener(new TextWatcher() {
-
-                @Override
-                public void afterTextChanged(Editable s) {
-                    // TODO Auto-generated method stub
-
-                }
-
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                    // TODO Auto-generated method stub
-
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    if(jumpToSlideInput.getText().toString().equals("0")){
-                        //jumpToSlideInput.setText("");
-                    }
-                }
-            });*/
-
             goToSlide.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -1846,24 +1279,6 @@ public class ConnectivityPage extends Activity implements SensorEventListener, N
                     }
                     d.dismiss();
                     selectedSlideNumber=0;
-
-                    // dismiss the dialog
-                    /*if(jumpToSlideInput.getText().toString().equals("")||jumpToSlideInput.getText().toString().equals("0")||jumpToSlideInput.getText().toString().equals("00")){
-                        jumpToSlideInput.setText("");
-                    }
-                    else {
-                        String slideNum = jumpToSlideInput.getText().toString();
-                        if(slideNum.length()<2){
-                            slideNum = "0"+slideNum;
-                            //Toast.makeText(getApplicationContext(),slideNum,Toast.LENGTH_SHORT).show();
-                            sendMessage("goto " + slideNum);
-                        }
-                        else if(slideNum.length()==2){
-                            sendMessage("goto " + slideNum);
-                            //Toast.makeText(getApplicationContext(),slideNum,Toast.LENGTH_SHORT).show();
-                        }
-                        d.dismiss();
-                    }*/
                 }
             });
             cancelJump.setOnClickListener(new OnClickListener()
@@ -1880,13 +1295,11 @@ public class ConnectivityPage extends Activity implements SensorEventListener, N
         else{
             sendMessage("PPTjump");
         }
-
-
     }
 
     public void openMPPlaylist(){sendMessage("pickMPL");}
 
-    public void openPPTOnceConnected(){
+    public void openPPTFile(){
         sendMessage("pickPPT");
     }
 
@@ -1901,7 +1314,6 @@ public class ConnectivityPage extends Activity implements SensorEventListener, N
                 {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        //finish();0
                         sendMessage("Disconn");
                         mChatService.stop();
                         mBluetoothAdapter.disable();
